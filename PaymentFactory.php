@@ -63,8 +63,9 @@ abstract class PaymentFactory
         $payment->execute(new CaptureRequest($model));
         $payment->execute($status = new BinaryMaskStatusRequest($model));
 
-        if ($status->isSuccess()) {
-            echo 'We purchase staff successfully';
+        if ($status->isPending()) {
+            echo "We purchase successfully this is your barcode {$model['result']['BarcodeImageUrl']}, please
+            print your barcode and go to the Bank.";
         } else if ($status->isFailed()) {
             echo 'An error occurred';
         } else {
