@@ -1,8 +1,8 @@
 <?php
-namespace App\Payum\Action;
+namespace Payum\DineroMail\Action;
 
-use Payum\Action\ActionInterface;
-use Payum\Request\StatusRequestInterface;
+use Payum\Core\Action\ActionInterface;
+use Payum\Core\Request\StatusRequestInterface;
 
 class StatusAction implements ActionInterface
 {

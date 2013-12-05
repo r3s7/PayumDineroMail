@@ -1,8 +1,8 @@
 <?php
-namespace App\Payum\Action;
+namespace Payum\DineroMail\Action;
 
-use Payum\Action\ActionInterface;
-use Payum\Request\CaptureRequest;
+use Payum\DineroMail\Action\ActionInterface;
+use Payum\Core\Request\CaptureRequest;
 
 class CaptureAction implements ActionInterface
 {

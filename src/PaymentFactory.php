@@ -1,11 +1,11 @@
 <?php
-namespace App;
+namespace Payum\DineroMail;
 
-App\Payum\Action\CaptureAction;
-App\Payum\Action\StatusAction;
-use Payum\Payment;
-use Payum\Request\CaptureRequest;
-use Payum\Request\BinaryMaskStatusRequest;
+use Payum\DineroMail\Action\CaptureAction;
+use Payum\DineroMail\Action\StatusAction;
+use Payum\Core\Payment;
+use Payum\Core\Request\CaptureRequest;
+use Payum\Core\Request\BinaryMaskStatusRequest;
 
 abstract class PaymentFactory
 {
