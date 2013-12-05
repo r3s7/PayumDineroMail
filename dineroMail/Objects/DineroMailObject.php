@@ -5,9 +5,12 @@ abstract class DineroMailObject
     protected $_gateway = null;
 
 
-    public final function __construct()
+    public final function __construct(DineroMailAction $dineroMailAction)
     {
-        $gateway = new DineroMailGateway(DINEROMAIL_NS_GATEWAY, DINEROMAIL_WDSL_GATEWAY);
+        $gateway = new DineroMailGateway(
+            $dineroMailAction->getConnection()->getGateway()->getNameSpace(),
+            $dineroMailAction->getConnection()->getGateway()->getWdsl()
+        );
         $this->_gateway = $gateway;
     }
 

@@ -7,7 +7,6 @@
  * @see DineroMailConnection, DineroMailException, DineroMailCredentials,
  * DineroMailGateway and DineroMail objects.
  */
-require("params.php");
 require("DineroMailDumper.php");
 require("DineroMailException.php");
 require("DineroMailGateway.php");
@@ -21,25 +20,48 @@ require("Objects/DineroMailItem.php");
 class DineroMailAction
 {
 
-    protected $_currency = DINEROMAIL_DEFAULT_CURRENCY;
-    protected $_provider = DINEROMAIL_DEFAULT_PROVIDER;
+    //Possible values:  ARS, BRL, MXN, CLP, USD
+    const DINEROMAIL_DEFAULT_CURRENCY = "USD";
+
+    const DINEROMAIL_NS_GATEWAY_SANDBOX = "https://sandboxapi.dineromail.com/";
+    const DINEROMAIL_WDSL_GATEWAY_SANDBOX = "https://sandboxapi.dineromail.com/dmapi.asmx?WSDL";
+
+    const DINEROMAIL_NS_GATEWAY = "https://sandboxapi.dineromail.com/";
+    const DINEROMAIL_WDSL_GATEWAY = "https://sandboxapi.dineromail.com/dmapi.asmx?WSDL";
+
+    //Possible values: rapipago, pagofacil, bapro, cobroexpress
+    const DINEROMAIL_DEFAULT_PROVIDER = "pagofacil";
+
+
+    protected $_currency;
+    protected $_provider;
 
     protected $_connection = null;
     protected $_client = null;
 
-    public function __construct($gatewayUsername, $gatewayPassword, $encryption, $sandbox)
+
+    public function __construct(
+        $gatewayUsername,
+        $gatewayPassword,
+        $encryption,
+        $sandbox,
+        $defaultProvider = DINEROMAIL_DEFAULT_PROVIDER,
+        $defaultCurrency = DINEROMAIL_DEFAULT_CURRENCY
+    )
     {
 
         $credentials = new DineroMailCredentials($gatewayUsername, $gatewayPassword);
 
-        if($sandbox == true){
+        if ($sandbox == true) {
+
             $gateway = new DineroMailGateway(DINEROMAIL_NS_GATEWAY_SANDBOX, DINEROMAIL_WDSL_GATEWAY_SANDBOX);
         } else {
+
             $gateway = new DineroMailGateway(DINEROMAIL_NS_GATEWAY, DINEROMAIL_WDSL_GATEWAY);
         }
 
-        $connection = new DineroMailConnection($credentials, $gateway, $encryption);
-        $this->_connection = $connection;
+        $this->_connection = new DineroMailConnection($credentials, $gateway, $encryption);
+        
         $this->setupClient();
     }
 
@@ -53,6 +75,15 @@ class DineroMailAction
         return $this->_connection;
     }
 
+    public function setCurrency($currency)
+    {
+        return $this->_currency = $currency;
+    }
+
+    public function getCurrency()
+    {
+        return $this->_currency;
+    }
 
     public function setProvider($provider)
     {
@@ -148,7 +179,6 @@ class DineroMailAction
             $subject,
             $message,
             $this->getConnection()->getCredentials()->getPassword());
-
 
 
         $request = array('Credential' => $this->credentialsObject(),

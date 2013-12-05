@@ -98,17 +98,17 @@ class CaptureAction implements ActionInterface
 
             try {
                 //trying to execute the DineroMail transaction through the doPaymentWithReference function
-                $dineroMailAction->doPaymentWithReference($items, $buyer, $model['TransactionId'], $model['Message'], $model['Subject']);
-                DineroMailDumper::dump($dineroMailAction, 10, true);
+                $dineroMailAction->doPaymentWithReference($items, $buyer, $model['MerchantTransactionId'], $model['Message'], $model['Subject']);
+                $model['status'] = 'success';
 
             } catch (DineroMailException $e) {
 
-                // drive the exception (Dump all the data with CVarDumper)
-                DineroMailDumper::dump($e, 10, true);
+                $model['status'] = 'error';
             }
 
-            $model['status'] = 'success';
+
         } else {
+
             $model['status'] = 'error';
         }
     }

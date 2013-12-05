@@ -14,7 +14,7 @@ class DineroMailItem extends DineroMailObject
     protected $_description = '';
     protected $_name = '';
     protected $_quantity = 1;
-    protected $_currency = DINEROMAIL_DEFAULT_CURRENCY;
+    protected $_currency = DineroMailAction::DINEROMAIL_DEFAULT_CURRENCY;
 
 
     public function setAmount($amount)
