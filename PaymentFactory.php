@@ -14,7 +14,7 @@ abstract class PaymentFactory
      * 
      * @return Payment
      */
-    public static function create(Api $api)
+    public static function create(Api $api, $gatewayUsername, $gatewayPassword, $encryption, $sandbox)
     {
         $payment = new Payment;
         
@@ -22,7 +22,7 @@ abstract class PaymentFactory
 
         $payment->addExtension(new EndlessCycleDetectorExtension);
 
-        $payment->addAction(new CaptureAction);
+        $payment->addAction(new CaptureAction($gatewayUsername, $gatewayPassword, $encryption, $sandbox));
         $payment->addAction(new StatusAction);
         $payment->addAction(new ExecuteSameRequestWithModelDetailsAction);
         

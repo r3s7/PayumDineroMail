@@ -10,10 +10,12 @@ class CaptureAction implements ActionInterface
 
     protected $gatewayPassword;
 
-    public function __construct($gatewayUsername, $gatewayPassword)
+    public function __construct($gatewayUsername, $gatewayPassword, $encryption, $sandbox)
     {
         $this->gatewayUsername = $gatewayUsername;
         $this->gatewayPassword = $gatewayPassword;
+        $this->encryption = $encryption;
+        $this->sandbox = $sandbox;
     }
 
     public function execute($request)
@@ -28,11 +30,7 @@ class CaptureAction implements ActionInterface
             isset($model['Country']) &&
             isset($model['Email']) &&
             isset($model['Phone']) &&
-            isset($model['Items']) &&
-            isset($model['GatewayUsername']) &&
-            isset($model['GatewayPassword']) &&
-            isset($model['Encryption']) &&
-            isset($model['SandBox'])
+            isset($model['Items'])
         ) {
 
             //do purchase call to the payment gateway using username and password.
@@ -72,7 +70,7 @@ class CaptureAction implements ActionInterface
 
             try {
                 //call the webservice
-                $transaction = new DineroMailAction($model['GatewayUsername'], $model['GatewayPassword'], $model['Encryption'], $model['SandBox']);
+                $transaction = new DineroMailAction($this->gatewayUsername, $this->gatewayPassword, $this->encryption, $this->sandbox = $sandbox);
                 $transaction->doPaymentWithReference($items, $buyer, $model['TransactionId'], $model['Message'], $model['Subject']);
                 DineroMailDumper::dump($transaction, 10, true);
 
