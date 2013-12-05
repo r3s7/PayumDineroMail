@@ -21,19 +21,24 @@ require("Objects/DineroMailItem.php");
 class DineroMailAction
 {
 
-
     protected $_currency = DINEROMAIL_DEFAULT_CURRENCY;
     protected $_provider = DINEROMAIL_DEFAULT_PROVIDER;
 
     protected $_connection = null;
     protected $_client = null;
 
-    public function __construct()
+    public function __construct($gatewayUsername, $gatewayPassword, $encryption, $sandbox)
     {
 
-        $credentials = new DineroMailCredentials(DINEROMAIL_API_USER, DINEROMAIL_API_PWD);
-        $gateway = new DineroMailGateway(DINEROMAIL_NS_GATEWAY, DINEROMAIL_WDSL_GATEWAY);
-        $connection = new DineroMailConnection($credentials, $gateway, DINEROMAIL_CONNECTION_ENCRYPTION);
+        $credentials = new DineroMailCredentials($gatewayUsername, $gatewayPassword);
+
+        if($sandbox == true){
+            $gateway = new DineroMailGateway(DINEROMAIL_NS_GATEWAY_SANDBOX, DINEROMAIL_WDSL_GATEWAY_SANDBOX);
+        } else {
+            $gateway = new DineroMailGateway(DINEROMAIL_NS_GATEWAY, DINEROMAIL_WDSL_GATEWAY);
+        }
+
+        $connection = new DineroMailConnection($credentials, $gateway, $encryption);
         $this->_connection = $connection;
         $this->setupClient();
     }
