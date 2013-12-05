@@ -10,19 +10,25 @@ class StatusAction implements ActionInterface
     {
         $model = $request->getModel();
 
-        if (false == isset($model['status'])) {
+        if ('PENDING' == isset($model['status'])) {
             $request->markNew();
 
             return;
         }
 
-        if ('success' == $model['status']) {
+        if ('COMPLETED' == $model['status']) {
             $request->markSuccess();
 
             return;
         }
 
-        if ('error' == $model['status']) {
+        if ('DENIED' == $model['status']) {
+            $request->markFailed();
+
+            return;
+        }
+
+        if ('ERROR' == $model['status']) {
             $request->markFailed();
 
             return;
