@@ -16,6 +16,9 @@ class StatusAction implements ActionInterface
             return;
         }
 
+        /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
+        /* (I think this thing applies only for IPN)
+         * */
         if ('COMPLETED' == $model['status']) {
             $request->markSuccess();
 

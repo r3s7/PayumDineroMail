@@ -101,38 +101,40 @@ class CaptureAction implements ActionInterface
                 $dineroMailAction->doPaymentWithReference($items, $buyer, $model['MerchantTransactionId'], $model['Message'], $model['Subject']);
 
 
-                if($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "PENDING"){
+                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "PENDING") {
 
                     $model['status'] = 'PENDING';
                     $model['result'] = array(
-                        'VoucherUrl' =>'',
+                        'VoucherUrl' => '',
                         'BarcodeImageUrl' => $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
-                        'MerchantTransactionId' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                        'Message' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
-                        'UniqueMessageId' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                        'Status' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                        'MerchantTransactionId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        'Message' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
+                        'UniqueMessageId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        'Status' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
                     );
                 }
 
-                //I have doubts here, I think this payment method never gets the COMPLETED status immediately
-                if($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "COMPLETED"){
+                /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
+                /* (I think this thing applies only for IPN)
+                 * */
+                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "COMPLETED") {
 
                     $model['status'] = 'COMPLETED';
                     $model['result'] = array(
-                    'VoucherUrl' => $dineroMailAction->getClient()->getDineroMailLastResponse()->VoucherUrl,
-                    'BarcodeImageUrl' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
-                    'MerchantTransactionId' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                    'Message' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
-                    'UniqueMessageId' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                    'Status' =>$dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
-                );
+                        'VoucherUrl' => $dineroMailAction->getClient()->getDineroMailLastResponse()->VoucherUrl,
+                        'BarcodeImageUrl' => $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        'MerchantTransactionId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        'Message' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
+                        'UniqueMessageId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        'Status' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                    );
                 }
 
 
-                if($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "DENIED")
+                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "DENIED")
                     $model['status'] = 'DENIED';
 
-                if($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "ERROR")
+                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "ERROR")
                     $model['status'] = 'ERROR';
 
 
