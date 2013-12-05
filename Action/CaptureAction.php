@@ -20,7 +20,20 @@ class CaptureAction implements ActionInterface
     {
         $model = $request->getModel();
 
-        if (isset($model['amount']) && isset($model['currency'])) {
+        if (
+            isset($model['Name']) &&
+            isset($model['LastName']) &&
+            isset($model['Address']) &&
+            isset($model['City']) &&
+            isset($model['Country']) &&
+            isset($model['Email']) &&
+            isset($model['Phone']) &&
+            isset($model['Items']) &&
+            isset($model['GatewayUsername']) &&
+            isset($model['GatewayPassword']) &&
+            isset($model['Encryption']) &&
+            isset($model['SandBox'])
+        ) {
 
             //do purchase call to the payment gateway using username and password.
 
@@ -37,20 +50,20 @@ class CaptureAction implements ActionInterface
 
             /* Capture Items */
 
-            foreach($model['Item'] as $item){
+            foreach ($model['Items'] as $item) {
 
                 $currentItem = new DineroMailItem();
                 $currentItem->setCode($item['Code']);
                 $currentItem->setName($item['Name']);
                 $currentItem->setDescription($item['Description']);
 
-                if(isset($item['Quantity']))
-                $currentItem->setQuantity($item['Quantity']);
+                if (isset($item['Quantity']))
+                    $currentItem->setQuantity($item['Quantity']);
 
                 $currentItem->setAmount($item['Amount']);
 
-                if(isset($item['Currency']))
-                $currentItem->setCurrency($item['Currency']);
+                if (isset($item['Currency']))
+                    $currentItem->setCurrency($item['Currency']);
 
                 $items[] = $currentItem;
             }
@@ -60,13 +73,13 @@ class CaptureAction implements ActionInterface
             try {
                 //call the webservice
                 $transaction = new DineroMailAction($model['GatewayUsername'], $model['GatewayPassword'], $model['Encryption'], $model['SandBox']);
-                $transaction->doPaymentWithReference($items, $buyer, $model['TransactionId'],$model['Message'],$model['Subject']);
-                DineroMailDumper::dump($transaction,10,true);
+                $transaction->doPaymentWithReference($items, $buyer, $model['TransactionId'], $model['Message'], $model['Subject']);
+                DineroMailDumper::dump($transaction, 10, true);
 
             } catch (DineroMailException $e) {
 
                 // drive the exception
-                DineroMailDumper::dump($e,10,true);
+                DineroMailDumper::dump($e, 10, true);
             }
 
             $model['status'] = 'success';
@@ -79,7 +92,6 @@ class CaptureAction implements ActionInterface
     {
         return
             $request instanceof CaptureRequest &&
-            $request->getModel() instanceof \ArrayAccess
-            ;
+            $request->getModel() instanceof \ArrayAccess;
     }
 }
