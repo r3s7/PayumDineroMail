@@ -9,6 +9,7 @@
  */
 require("DineroMailDumper.php");
 require("DineroMailException.php");
+require("DineroMailSoapClient.php");
 require("DineroMailGateway.php");
 require("DineroMailCredentials.php");
 require("DineroMailConnection.php");
@@ -61,7 +62,7 @@ class DineroMailAction
         }
 
         $this->_connection = new DineroMailConnection($credentials, $gateway, $encryption);
-        
+
         $this->setupClient();
     }
 
@@ -95,7 +96,7 @@ class DineroMailAction
         return $this->_provider;
     }
 
-    protected function getClient()
+    public function getClient()
     {
         return $this->_client;
     }
@@ -108,7 +109,7 @@ class DineroMailAction
     protected function setupClient()
     {
 
-        $this->_client = new SoapClient($this->getConnection()->getGateway()->getWdsl(),
+        $this->_client = new DineroMailSoapClient($this->getConnection()->getGateway()->getWdsl(),
             array('trace' => 1,
                 'exceptions' => 1));
     }

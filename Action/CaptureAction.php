@@ -99,17 +99,26 @@ class CaptureAction implements ActionInterface
             try {
                 //trying to execute the DineroMail transaction through the doPaymentWithReference function
                 $dineroMailAction->doPaymentWithReference($items, $buyer, $model['MerchantTransactionId'], $model['Message'], $model['Subject']);
+
+                if($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "COMPLETED")
                 $model['status'] = 'success';
+
+                if($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "DENIED")
+                    $model['status'] = 'DENIED';
+
+                if($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "ERROR")
+                    $model['status'] = 'ERROR';
+
 
             } catch (DineroMailException $e) {
 
-                $model['status'] = 'error';
+                $model['status'] = 'ERROR';
             }
 
 
         } else {
 
-            $model['status'] = 'error';
+            $model['status'] = 'ERROR';
         }
     }
 

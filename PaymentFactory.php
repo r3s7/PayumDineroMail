@@ -10,12 +10,13 @@ use Payum\Request\BinaryMaskStatusRequest;
 abstract class PaymentFactory
 {
     /**
-     * @param Api $api
-     *
+     * @param $model
      * @param $gatewayUsername for sandbox you can use 'TEST-TEST-TEST-TEST-TEST'
      * @param $gatewayPassword for sandbox you can use 'TEST'
      * @param $encryption for sandbox you can use false here
      * @param $sandbox if you want use sandbox you need this in true.
+     * @internal param \App\Api $api
+     *
      * @return Payment
      */
     public static function create($model, $gatewayUsername, $gatewayPassword, $encryption, $sandbox)
@@ -30,12 +31,12 @@ abstract class PaymentFactory
             //Message about the transaction (String)
             'Message' => '',
             //Buyer data *All required
-            'Name' => 'Jhon',
+            'Name' => 'John',
             'LastName' => 'Doe',
             'Address' => 'Lombard Street',
             'City' => 'United States',
             'Country' => 'San Francisco',
-            'Email' => 'jhon@doe.com',
+            'Email' => 'john@doe.com',
             'Phone' => '45556565',
             //array of items *All required
             'Items' => array(
