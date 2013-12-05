@@ -58,9 +58,8 @@ class CaptureAction implements ActionInterface
             /* Execute transaction */
 
             try {
-
                 //call the webservice
-                $transaction = new DineroMailAction();
+                $transaction = new DineroMailAction($model['GatewayUsername'], $model['GatewayPassword'], $model['Encryption'], $model['SandBox']);
                 $transaction->doPaymentWithReference($items, $buyer, $model['TransactionId'],$model['Message'],$model['Subject']);
                 DineroMailDumper::dump($transaction,10,true);
 
