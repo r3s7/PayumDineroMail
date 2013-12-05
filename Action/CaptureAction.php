@@ -165,6 +165,8 @@ class CaptureAction implements ActionInterface
 
             $model['status'] = 'ERROR';
         }
+
+        $request->setModel($model);
     }
 
     public function supports($request)
