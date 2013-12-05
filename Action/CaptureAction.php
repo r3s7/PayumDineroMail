@@ -54,7 +54,7 @@ class CaptureAction implements ActionInterface
 
             /* Capture Buyer information, all information are required */
 
-            /* You need pass the reference of the related DineroMailAction instance to the DineroMailBuyer instance,             *
+            /* You need pass the reference of the related DineroMailAction instance to the DineroMailBuyer instance,
              * the DineroMailBuyer instance need the Gateway information stored in DineroMailAction instance,
              * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
              * */
@@ -74,7 +74,7 @@ class CaptureAction implements ActionInterface
 
             foreach ($model['Items'] as $item) {
 
-                /* You need pass the reference of the related DineroMailAction instance to the DineroMailItem instance,             *
+                /* You need pass the reference of the related DineroMailAction instance to the DineroMailItem instance,
                  * the DineroMailItem instance need the Gateway information stored in DineroMailAction instance,
                  * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
                  * */
@@ -98,7 +98,13 @@ class CaptureAction implements ActionInterface
 
             try {
                 //trying to execute the DineroMail transaction through the doPaymentWithReference function
-                $dineroMailAction->doPaymentWithReference($items, $buyer, $model['MerchantTransactionId'], $model['Message'], $model['Subject']);
+                $dineroMailAction->doPaymentWithReference(
+                    $items,
+                    $buyer,
+                    $model['MerchantTransactionId'],
+                    $model['Message'],
+                    $model['Subject']
+                );
 
 
                 if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "PENDING") {
@@ -106,11 +112,16 @@ class CaptureAction implements ActionInterface
                     $model['status'] = 'PENDING';
                     $model['result'] = array(
                         'VoucherUrl' => '',
-                        'BarcodeImageUrl' => $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
-                        'MerchantTransactionId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                        'Message' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
-                        'UniqueMessageId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                        'Status' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                        'BarcodeImageUrl' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        'MerchantTransactionId' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        'Message' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
+                        'UniqueMessageId' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        'Status' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
                     );
                 }
 
@@ -121,12 +132,18 @@ class CaptureAction implements ActionInterface
 
                     $model['status'] = 'COMPLETED';
                     $model['result'] = array(
-                        'VoucherUrl' => $dineroMailAction->getClient()->getDineroMailLastResponse()->VoucherUrl,
-                        'BarcodeImageUrl' => $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
-                        'MerchantTransactionId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                        'Message' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
-                        'UniqueMessageId' => $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                        'Status' => $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                        'VoucherUrl' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->VoucherUrl,
+                        'BarcodeImageUrl' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        'MerchantTransactionId' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        'Message' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
+                        'UniqueMessageId' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        'Status' =>
+                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
                     );
                 }
 

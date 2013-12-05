@@ -11,7 +11,7 @@ class StatusAction implements ActionInterface
         $model = $request->getModel();
 
         if ('PENDING' == isset($model['status'])) {
-            $request->markNew();
+            $request->markPending();
 
             return;
         }
