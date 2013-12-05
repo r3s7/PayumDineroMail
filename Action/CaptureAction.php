@@ -7,15 +7,21 @@ use Payum\Request\CaptureRequest;
 class CaptureAction implements ActionInterface
 {
     protected $gatewayUsername;
-
     protected $gatewayPassword;
+    protected $encryption;
+    protected $sandbox;
+    protected $provider;
+    protected $currency;
 
-    public function __construct($gatewayUsername, $gatewayPassword, $encryption, $sandbox)
+
+    public function __construct($gatewayUsername, $gatewayPassword, $encryption, $sandbox, $provider, $currency)
     {
         $this->gatewayUsername = $gatewayUsername;
         $this->gatewayPassword = $gatewayPassword;
         $this->encryption = $encryption;
         $this->sandbox = $sandbox;
+        $this->provider = $provider;
+        $this->currency = $currency;
     }
 
     public function execute($request)
@@ -30,14 +36,29 @@ class CaptureAction implements ActionInterface
             isset($model['Country']) &&
             isset($model['Email']) &&
             isset($model['Phone']) &&
-            isset($model['Items'])
+            is_array($model['Items'])
         ) {
 
             //do purchase call to the payment gateway using username and password.
 
-            /*Capture Buyer*/
 
-            $buyer = new DineroMailBuyer();
+            //new DineroMailAction instance
+            $dineroMailAction = new DineroMailAction(
+                $this->gatewayUsername,
+                $this->gatewayPassword,
+                $this->encryption,
+                $this->sandbox,
+                $this->provider,
+                $this->currency
+            );
+
+            /* Capture Buyer information, all information are required */
+
+            /* You need pass the reference of the related DineroMailAction instance to the DineroMailBuyer instance,             *
+             * the DineroMailBuyer instance need the Gateway information stored in DineroMailAction instance,
+             * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
+             * */
+            $buyer = new DineroMailBuyer($dineroMailAction);
             $buyer->setName($model['Name']);
             $buyer->setLastName($model['LastName']);
             $buyer->setAddress($model['Address']);
@@ -46,11 +67,18 @@ class CaptureAction implements ActionInterface
             $buyer->setEmail($model['Email']);
             $buyer->setPhone($model['Phone']);
 
-            /* Capture Items */
+
+            /* Capture Items information, all information are required except Quantity and Currency
+             * remember: you set the default currency and provider in the DineroMailAction Constructor.
+             */
 
             foreach ($model['Items'] as $item) {
 
-                $currentItem = new DineroMailItem();
+                /* You need pass the reference of the related DineroMailAction instance to the DineroMailItem instance,             *
+                 * the DineroMailItem instance need the Gateway information stored in DineroMailAction instance,
+                 * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
+                 * */
+                $currentItem = new DineroMailItem($dineroMailAction);
                 $currentItem->setCode($item['Code']);
                 $currentItem->setName($item['Name']);
                 $currentItem->setDescription($item['Description']);
@@ -66,17 +94,16 @@ class CaptureAction implements ActionInterface
                 $items[] = $currentItem;
             }
 
-            /* Execute transaction */
+            /* Execute the transaction */
 
             try {
-                //call the webservice
-                $transaction = new DineroMailAction($this->gatewayUsername, $this->gatewayPassword, $this->encryption, $this->sandbox = $sandbox);
-                $transaction->doPaymentWithReference($items, $buyer, $model['TransactionId'], $model['Message'], $model['Subject']);
-                DineroMailDumper::dump($transaction, 10, true);
+                //trying to execute the DineroMail transaction through the doPaymentWithReference function
+                $dineroMailAction->doPaymentWithReference($items, $buyer, $model['TransactionId'], $model['Message'], $model['Subject']);
+                DineroMailDumper::dump($dineroMailAction, 10, true);
 
             } catch (DineroMailException $e) {
 
-                // drive the exception
+                // drive the exception (Dump all the data with CVarDumper)
                 DineroMailDumper::dump($e, 10, true);
             }
 
