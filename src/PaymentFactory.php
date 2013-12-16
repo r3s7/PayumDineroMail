@@ -35,22 +35,22 @@ abstract class PaymentFactory
 
 
 
-        /*
-       // CaptureAction(ApiUser[Slugified String], ApiPassword[String], Encryption[boolean], SanBox[boolean])
-       $payment->addAction(new CaptureAction($gatewayUsername, $gatewayPassword, $encryption, $sandbox));
-       $payment->addAction(new StatusAction);
+         /*
+        // CaptureAction(ApiUser[Slugified String], ApiPassword[String], Encryption[boolean], SanBox[boolean])
+        $payment->addAction(new CaptureAction($gatewayUsername, $gatewayPassword, $encryption, $sandbox));
+        $payment->addAction(new StatusAction);
 
 
 
 
-       if ($status->isPending()) {
-           echo "We purchase successfully this is your barcode {$model['result']['BarcodeImageUrl']}, please
-           print your barcode and go to the Bank.";
-       } else if ($status->isFailed()) {
-           echo 'An error occurred';
-       } else {
-           echo 'Something went wrong but we don`t know the exact status';
-       }
+        if ($status->isPending()) {
+            echo "We purchase successfully this is your barcode {$model['result']['BarcodeImageUrl']}, please
+            print your barcode and go to the Bank.";
+        } else if ($status->isFailed()) {
+            echo 'An error occurred';
+        } else {
+            echo 'Something went wrong but we don`t know the exact status';
+        }
 */
         return $payment;
     }

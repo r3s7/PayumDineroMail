@@ -6,7 +6,9 @@
  * @see Vendor_DineroMail_Object_Object
  */
 
-class DineroMailItem extends DineroMailObject
+namespace Payum\DineroMail\Api\Objects;
+
+class DineroMailItem extends BaseObject
 {
 
     protected $_amount = '';

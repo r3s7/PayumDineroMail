@@ -1,7 +1,10 @@
 <?php
 namespace Payum\DineroMail;
 
-use Payum\DineroMail;
+use Payum\DineroMail\Api\Credentials;
+use Payum\DineroMail\Api\Gateway;
+use Payum\DineroMail\Api\Connection;
+use Payum\DineroMail\Api\DineroMailSoapClient;
 /**
  * Represents and contains all logic required to call the DineroMail
  * web service
@@ -40,22 +43,22 @@ class Api
     )
     {
 
-        $credentials = new DineroMailCredentials($config['username'],$config['password']);
+        $credentials = new Credentials($config['username'],$config['password']);
 
         if ($config['sandbox'] == true) {
 
-            $gateway = new DineroMailGateway(self::DINEROMAIL_NS_GATEWAY_SANDBOX, self::DINEROMAIL_WDSL_GATEWAY_SANDBOX);
+            $gateway = new Gateway(self::DINEROMAIL_NS_GATEWAY_SANDBOX, self::DINEROMAIL_WDSL_GATEWAY_SANDBOX);
         } else {
 
-            $gateway = new DineroMailGateway(self::DINEROMAIL_NS_GATEWAY, self::DINEROMAIL_WDSL_GATEWAY);
+            $gateway = new Gateway(self::DINEROMAIL_NS_GATEWAY, self::DINEROMAIL_WDSL_GATEWAY);
         }
 
-        $this->_connection = new DineroMailConnection($credentials, $gateway, $config['encryption']);
+        $this->_connection = new Connection($credentials, $gateway, $config['encryption']);
 
         $this->setupClient();
     }
 
-    public function setConnection(DineroMailConnection $connection)
+    public function setConnection(Connection $connection)
     {
         return $this->_connection = $connection;
     }
@@ -100,7 +103,7 @@ class Api
 
         $this->_client = new DineroMailSoapClient($this->getConnection()->getGateway()->getWdsl(),
             array('trace' => 1,
-                'exceptions' => 1));
+                  'exceptions' => 1));
     }
 
     /**
@@ -113,7 +116,7 @@ class Api
 
 
         return new SOAPVar(array('APIUserName' => $this->getConnection()->getCredentials()->getUserName(),
-                'APIPassword' => $this->getConnection()->getCredentials()->getPassword()),
+                                 'APIPassword' => $this->getConnection()->getCredentials()->getPassword()),
             SOAP_ENC_OBJECT,
             'APICredential',
             $this->getConnection()->getGateway()->getNameSpace());
@@ -148,7 +151,7 @@ class Api
      * @param DineroMailBuyer $buyer contains the buyer information
      * @param string $transactionId an unique TX id
      */
-    public function doPaymentWithReference(array $items, DineroMailBuyer $buyer, $transactionId, $message, $subject)
+    public function doPaymentWithReference(array $items, Buyer $buyer, $transactionId, $message, $subject)
     {
 
         $messageId = $this->uniqueId();
@@ -172,15 +175,15 @@ class Api
 
 
         $request = array('Credential' => $this->credentialsObject(),
-            'Crypt' => false,
-            'MerchantTransactionId' => $transactionId,
-            'UniqueMessageId' => $messageId,
-            'Provider' => $this->getProvider(),
-            'Message' => $message,
-            'Subject' => $subject,
-            'Items' => $oitems,
-            'Buyer' => $buyer->asSoapObject(),
-            'Hash' => $hash);
+                         'Crypt' => false,
+                         'MerchantTransactionId' => $transactionId,
+                         'UniqueMessageId' => $messageId,
+                         'Provider' => $this->getProvider(),
+                         'Message' => $message,
+                         'Subject' => $subject,
+                         'Items' => $oitems,
+                         'Buyer' => $buyer->asSoapObject(),
+                         'Hash' => $hash);
 
 
         $result = $this->call("DoPaymentWithReference", $request);

@@ -6,7 +6,9 @@
  * @see Vendor_DineroMail_Object_Object
  */
 
-class DineroMailBuyer extends DineroMailObject
+namespace Payum\DineroMail\Api\Objects;
+
+class Buyer extends BaseObject
 {
 
     protected $_address = '';

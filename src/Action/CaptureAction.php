@@ -103,15 +103,15 @@ class CaptureAction extends PaymentAwareAction
                     $model['result'] = array(
                         'VoucherUrl' => '',
                         'BarcodeImageUrl' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
                         'MerchantTransactionId' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
                         'Message' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
                         'UniqueMessageId' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
                         'Status' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
                     );
                 }
 
@@ -123,17 +123,17 @@ class CaptureAction extends PaymentAwareAction
                     $model['status'] = 'COMPLETED';
                     $model['result'] = array(
                         'VoucherUrl' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->VoucherUrl,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->VoucherUrl,
                         'BarcodeImageUrl' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
                         'MerchantTransactionId' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
                         'Message' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
                         'UniqueMessageId' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
                         'Status' =>
-                            $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
                     );
                 }
 
