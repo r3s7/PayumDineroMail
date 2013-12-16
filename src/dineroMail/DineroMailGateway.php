@@ -1,4 +1,5 @@
 <?php
+namespace Payum\DineroMail;
 
 class DineroMailGateway
 {

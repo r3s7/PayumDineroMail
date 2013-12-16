@@ -1,8 +1,10 @@
 <?php
+namespace Payum\DineroMail;
+
 /*
  * is the same SoapClient but with especial methods for retrieve information about DineroMail requests and responses
  * */
-class DineroMailSoapClient extends SoapClient
+class DineroMailSoapClient extends \SoapClient
 {
 
     public function getDineroMailLastResponse()

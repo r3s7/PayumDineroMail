@@ -1,6 +1,6 @@
 <?php
 
-class DineroMailException extends Exception
+class DineroMailException extends \Exception
 {
 
     public function __construct($string, $code)

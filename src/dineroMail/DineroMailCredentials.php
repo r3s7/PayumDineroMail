@@ -1,4 +1,5 @@
 <?php
+namespace Payum\DineroMail;
 
 /**
  * Contains the credentials required by Vendor_DineroMail_Connection

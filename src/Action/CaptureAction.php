@@ -1,31 +1,21 @@
 <?php
+/*
+ * See the documentation about this in:
+ * http://payum.forma-dev.com/documentation/master/Payum/develop-payment-gateway-with-payum
+ *
+ * */
 namespace Payum\DineroMail\Action;
 
-use Payum\DineroMail\Action\ActionInterface;
+use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\Request\CaptureRequest;
 
-class CaptureAction implements ActionInterface
+class CaptureAction extends PaymentAwareAction
 {
-    protected $gatewayUsername;
-    protected $gatewayPassword;
-    protected $encryption;
-    protected $sandbox;
-    protected $provider;
-    protected $currency;
 
-
-    public function __construct($gatewayUsername, $gatewayPassword, $encryption, $sandbox, $provider, $currency)
-    {
-        $this->gatewayUsername = $gatewayUsername;
-        $this->gatewayPassword = $gatewayPassword;
-        $this->encryption = $encryption;
-        $this->sandbox = $sandbox;
-        $this->provider = $provider;
-        $this->currency = $currency;
-    }
 
     public function execute($request)
     {
+        \CVarDumper::dump($request,10,true); exit();
         $model = $request->getModel();
 
         if (

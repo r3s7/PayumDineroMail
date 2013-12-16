@@ -1,4 +1,5 @@
 <?php
+namespace Payum\DineroMail;
 
 /**
  * Represents a connection with the webservice
