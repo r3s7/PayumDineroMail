@@ -3,8 +3,9 @@ namespace Payum\DineroMail;
 
 use Payum\DineroMail\Api\Credentials;
 use Payum\DineroMail\Api\Gateway;
+use Payum\DineroMail\Api\Objects\Buyer;
 use Payum\DineroMail\Api\Connection;
-use Payum\DineroMail\Api\DineroMailSoapClient;
+use Payum\DineroMail\Api\DMSoapClient;
 /**
  * Represents and contains all logic required to call the DineroMail
  * web service
@@ -38,10 +39,16 @@ class Api
 
     public function __construct(
         $config,
-        $defaultProvider = self::DINEROMAIL_DEFAULT_PROVIDER,
         $defaultCurrency = self::DINEROMAIL_DEFAULT_CURRENCY
     )
     {
+
+        if(!empty($config['provider'])){
+
+            $this->setProvider($config['provider']);
+        } else{
+            $this->setProvider(self::DINEROMAIL_DEFAULT_PROVIDER);
+        }
 
         $credentials = new Credentials($config['username'],$config['password']);
 
@@ -101,7 +108,7 @@ class Api
     protected function setupClient()
     {
 
-        $this->_client = new DineroMailSoapClient($this->getConnection()->getGateway()->getWdsl(),
+        $this->_client = new DMSoapClient($this->getConnection()->getGateway()->getWdsl(),
             array('trace' => 1,
                   'exceptions' => 1));
     }
@@ -115,7 +122,7 @@ class Api
     {
 
 
-        return new SOAPVar(array('APIUserName' => $this->getConnection()->getCredentials()->getUserName(),
+        return new \SOAPVar(array('APIUserName' => $this->getConnection()->getCredentials()->getUserName(),
                                  'APIPassword' => $this->getConnection()->getCredentials()->getPassword()),
             SOAP_ENC_OBJECT,
             'APICredential',
@@ -184,7 +191,6 @@ class Api
                          'Items' => $oitems,
                          'Buyer' => $buyer->asSoapObject(),
                          'Hash' => $hash);
-
 
         $result = $this->call("DoPaymentWithReference", $request);
 

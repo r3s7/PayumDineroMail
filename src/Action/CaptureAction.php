@@ -6,8 +6,13 @@
  * */
 namespace Payum\DineroMail\Action;
 
+use Payum\DineroMail\Api\DineroMailException;
+use Payum\DineroMail\Api\Objects\Buyer;
+use Payum\DineroMail\Api\Objects\Item;
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\Request\CaptureRequest;
+use Payum\Core\Model\ArrayObject;
+use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
 class CaptureAction extends PaymentAwareAction
 {
@@ -15,32 +20,45 @@ class CaptureAction extends PaymentAwareAction
 
     public function execute($request)
     {
-        \CVarDumper::dump($request,10,true); exit();
-        $model = $request->getModel();
+
+        $getPayumPaymentDetails = PaymentDetailsActiveRecordWrapper::findModelById(
+            'payum_payment',
+            $request->getModel()->getDetails()->getId()
+        );
+
+        $model = unserialize($getPayumPaymentDetails->activeRecord->attributes['_details']);
 
         if (
-            isset($model['Name']) &&
-            isset($model['LastName']) &&
-            isset($model['Address']) &&
-            isset($model['City']) &&
-            isset($model['Country']) &&
-            isset($model['Email']) &&
-            isset($model['Phone']) &&
-            is_array($model['Items'])
+            array_key_exists('MerchantTransactionId', $model) &&
+            array_key_exists('Name', $model) &&
+            array_key_exists('LastName', $model) &&
+            array_key_exists('Address', $model) &&
+            array_key_exists('City', $model) &&
+            array_key_exists('Country', $model) &&
+            array_key_exists('Email', $model) &&
+            array_key_exists('Phone', $model)
         ) {
+
+            $model['Message'] = 'This is a payment of '. $model['MerchantTransactionId'];
+            $model['Subject'] = 'Payment of '. $model['MerchantTransactionId'];
+
+            $unSuglify = explode('-', $model['MerchantTransactionId']);
+
+            $getPayment = \Payment::model()->findByPk($unSuglify[0]);
+            $getDineroMailConfig = \DineroMailConfig::model()->findByPk($getPayment->payment_method_id);
+
+
+            $getOrder = \Order::model()->findByPk($getPayment->order_id);
+
+            $getOrderItems = $getOrder->orderItems();
+
+
 
             //do purchase call to the payment gateway using username and password.
 
 
             //new DineroMailAction instance
-            $dineroMailAction = new DineroMailAction(
-                $this->gatewayUsername,
-                $this->gatewayPassword,
-                $this->encryption,
-                $this->sandbox,
-                $this->provider,
-                $this->currency
-            );
+            $Api = $getDineroMailConfig->getApi();
 
             /* Capture Buyer information, all information are required */
 
@@ -48,7 +66,7 @@ class CaptureAction extends PaymentAwareAction
              * the DineroMailBuyer instance need the Gateway information stored in DineroMailAction instance,
              * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
              * */
-            $buyer = new DineroMailBuyer($dineroMailAction);
+            $buyer = new Buyer($Api);
             $buyer->setName($model['Name']);
             $buyer->setLastName($model['LastName']);
             $buyer->setAddress($model['Address']);
@@ -62,24 +80,26 @@ class CaptureAction extends PaymentAwareAction
              * remember: you set the default currency and provider in the DineroMailAction Constructor.
              */
 
-            foreach ($model['Items'] as $item) {
+            $items = array();
+            foreach ($getOrderItems as $item) {
+
 
                 /* You need pass the reference of the related DineroMailAction instance to the DineroMailItem instance,
-                 * the DineroMailItem instance need the Gateway information stored in DineroMailAction instance,
+                 * the Dine \CVarDumper::dump($items,10,true);
+                exit();roMailItem instance need the Gateway information stored in DineroMailAction instance,
                  * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
                  * */
-                $currentItem = new DineroMailItem($dineroMailAction);
-                $currentItem->setCode($item['Code']);
-                $currentItem->setName($item['Name']);
-                $currentItem->setDescription($item['Description']);
+                $currentItem = null;
+                $currentItem = new Item($Api);
+                $currentItem->setCode($item->type .'-'. $item->id);
+                $currentItem->setName($item->name);
+                $currentItem->setDescription($item->name);
 
-                if (isset($item['Quantity']))
-                    $currentItem->setQuantity($item['Quantity']);
+                $currentItem->setAmount($item->amount);
 
-                $currentItem->setAmount($item['Amount']);
-
-                if (isset($item['Currency']))
-                    $currentItem->setCurrency($item['Currency']);
+                if (isset($model['Items']['Currency'])) {
+                    $currentItem->setCurrency($model['Items']['Currency']);
+                }
 
                 $items[] = $currentItem;
             }
@@ -88,81 +108,111 @@ class CaptureAction extends PaymentAwareAction
 
             try {
                 //trying to execute the DineroMail transaction through the doPaymentWithReference function
-                $dineroMailAction->doPaymentWithReference(
+                $Api->doPaymentWithReference(
                     $items,
                     $buyer,
-                    $model['MerchantTransactionId'],
+                    $model['MerchantTransactionId'], //change this value to "1" in sandbox
                     $model['Message'],
                     $model['Subject']
                 );
 
 
-                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "PENDING") {
 
-                    $model['status'] = 'PENDING';
+                if ($Api->getClient()->getDineroMailLastResponse()->Status == "PENDING") {
+
+                  /*$model['status'] = 'PENDING';
                     $model['result'] = array(
-                        'VoucherUrl' => '',
-                        'BarcodeImageUrl' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        'VoucherUrl'            => '',
+                        'BarcodeImageUrl'       =>
+                        $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
                         'MerchantTransactionId' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                        'Message' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
-                        'UniqueMessageId' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                        'Status' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                        $Api->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        'Message'               =>
+                        $Api->getClient()->getDineroMailLastResponse()->Message,
+                        'UniqueMessageId'       =>
+                        $Api->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        'Status'                =>
+                        $Api->getClient()->getDineroMailLastResponse()->Status,
+                    );*/
+
+                    $getPayment->bank_transfer_reference = array(
+                        'BarcodeImageUrl' => $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl
                     );
+                    $getPayment->bank_transfer_reference = serialize($getPayment->bank_transfer_reference);
+                    $getPayment->save();
+
+                    header("location{$request->getModel()->activeRecord->_after_url}");
                 }
 
                 /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
                 /* (I think this thing applies only for IPN)
                  * */
-                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "COMPLETED") {
+                if ($Api->getClient()->getDineroMailLastResponse()->Status == "COMPLETED") {
 
-                    $model['status'] = 'COMPLETED';
+                  /* $model['status'] = 'COMPLETED';
                     $model['result'] = array(
-                        'VoucherUrl' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->VoucherUrl,
-                        'BarcodeImageUrl' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        'VoucherUrl'            =>
+                        $Api->getClient()->getDineroMailLastResponse()->VoucherUrl,
+                        'BarcodeImageUrl'       =>
+                        $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
                         'MerchantTransactionId' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                        'Message' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Message,
-                        'UniqueMessageId' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                        'Status' =>
-                        $dineroMailAction->getClient()->getDineroMailLastResponse()->Status,
+                        $Api->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
+                        'Message'               =>
+                        $Api->getClient()->getDineroMailLastResponse()->Message,
+                        'UniqueMessageId'       =>
+                        $Api->getClient()->getDineroMailLastResponse()->UniqueMessageId,
+                        'Status'                =>
+                        $Api->getClient()->getDineroMailLastResponse()->Status,
+                    );*/
+
+                    $getPayment->bank_transfer_reference = array(
+                        'BarcodeImageUrl' => $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
+                        'VoucherUrl'      => $Api->getClient()->getDineroMailLastResponse()->VoucherUrl
+
                     );
+                    $getPayment->bank_transfer_reference = serialize($getPayment->bank_transfer_reference);
+                    $getPayment->save();
+
+                    header("location{$request->getModel()->activeRecord->_after_url}");
                 }
 
 
-                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "DENIED")
-                    $model['status'] = 'DENIED';
+                if ($Api->getClient()->getDineroMailLastResponse()->Status == "DENIED") {
+                    //$model['status'] = 'DENIED';
+                    $getPayment->status = 'failed';
+                    $getPayment->save();
+                }
 
-                if ($dineroMailAction->getClient()->getDineroMailLastResponse()->Status == "ERROR")
-                    $model['status'] = 'ERROR';
+                if ($Api->getClient()->getDineroMailLastResponse()->Status == "ERROR") {
+                  //$model['status'] = 'ERROR';
+                    $getPayment->status = 'failed';
+                    $getPayment->save();
+                }
 
 
             } catch (DineroMailException $e) {
 
-                $model['status'] = 'ERROR';
+                //$model['status'] = 'ERROR';
+                $getPayment->status = 'failed';
+                $getPayment->save();
             }
 
 
         } else {
 
-            $model['status'] = 'ERROR';
+            //$model['status'] = 'ERROR';
+            throw new \CHttpException(400, \Yii::t('app', 'bad request'));
         }
 
-        $request->setModel($model);
+\CVarDumper::dump($request->getModel()->activeRecord->_after_url,10,true);
+       //$request->setModel($model);
     }
 
     public function supports($request)
     {
-        return
-            $request instanceof CaptureRequest &&
-            $request->getModel() instanceof \ArrayAccess;
+
+        return true;
+        /*  $request instanceof CaptureRequest &&
+          $request->getModel() instanceof \ArrayAccess;*/
     }
 }

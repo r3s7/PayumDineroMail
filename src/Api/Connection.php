@@ -16,8 +16,8 @@ class Connection
     protected $_crypt = false;
 
 
-    public function __construct(DineroMailCredentials $credentials,
-                                DineroMailGateway $gateway, $crypt = false)
+    public function __construct(Credentials $credentials,
+                                Gateway $gateway, $crypt = false)
     {
         $this->_credentials = $credentials;
         $this->_gateway = $gateway;

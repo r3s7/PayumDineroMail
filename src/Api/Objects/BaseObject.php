@@ -2,14 +2,16 @@
 
 namespace Payum\DineroMail\Api\Objects;
 
+use Payum\DineroMail\Api\Gateway;
+use Payum\DineroMail\Api;
 abstract class BaseObject
 {
     protected $_gateway = null;
 
 
-    public final function __construct(DineroMailAction $dineroMailAction)
+    public final function __construct(Api $dineroMailAction)
     {
-        $gateway = new DineroMailGateway(
+        $gateway = new Gateway(
             $dineroMailAction->getConnection()->getGateway()->getNameSpace(),
             $dineroMailAction->getConnection()->getGateway()->getWdsl()
         );

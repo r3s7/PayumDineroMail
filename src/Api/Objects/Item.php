@@ -8,7 +8,9 @@
 
 namespace Payum\DineroMail\Api\Objects;
 
-class DineroMailItem extends BaseObject
+use Payum\DineroMail\Api;
+
+class Item extends BaseObject
 {
 
     protected $_amount = '';
@@ -16,7 +18,7 @@ class DineroMailItem extends BaseObject
     protected $_description = '';
     protected $_name = '';
     protected $_quantity = 1;
-    protected $_currency = DineroMailAction::DINEROMAIL_DEFAULT_CURRENCY;
+    protected $_currency = Api::DINEROMAIL_DEFAULT_CURRENCY;
 
 
     public function setAmount($amount)
@@ -52,7 +54,7 @@ class DineroMailItem extends BaseObject
     public function asSoapObject()
     {
 
-        return new SOAPVar(array('Amount' => $this->_amount,
+        return new \SOAPVar(array('Amount' => $this->_amount,
                 'Code' => $this->_code,
                 'Currency' => $this->_currency,
                 'Description' => $this->_description,

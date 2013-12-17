@@ -2,6 +2,7 @@
 namespace Payum\DineroMail;
 
 use Payum\DineroMail\Action\CaptureAction;
+use Payum\DineroMail\Action\StatusAction;
 use Payum\Core\Payment;
 use Payum\Core\Request\CaptureRequest;
 use Payum\Core\Request\BinaryMaskStatusRequest;
@@ -33,12 +34,13 @@ abstract class PaymentFactory
         /* in third place, I need append an instance of the action DoPaymentWithReference to the payment */
         $payment->addAction(new CaptureAction);
 
+        $payment->addAction(new StatusAction);
 
 
          /*
         // CaptureAction(ApiUser[Slugified String], ApiPassword[String], Encryption[boolean], SanBox[boolean])
         $payment->addAction(new CaptureAction($gatewayUsername, $gatewayPassword, $encryption, $sandbox));
-        $payment->addAction(new StatusAction);
+
 
 
 

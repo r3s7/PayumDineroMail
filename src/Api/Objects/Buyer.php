@@ -58,7 +58,7 @@ class Buyer extends BaseObject
     public function asSoapObject()
     {
 
-        return new SOAPVar(array('Address' => $this->_address,
+        return new \SOAPVar(array('Address' => $this->_address,
                 'City' => $this->_city,
                 'Country' => $this->_country,
                 'Email' => $this->_email,
