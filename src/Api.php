@@ -163,20 +163,11 @@ class Api
      */
     public function doPaymentWithReference(array $items, Buyer $buyer, $transactionId, $message, $subject)
     {
-
         $messageId = $this->uniqueId();
-        $itemsChain = '';
-        $oitems = array();
-
-        foreach ($items as $item) {
-            $itemsChain .= $item;
-            $oitems[] = $item->asSoapObject();
-        }
-
 
         $hash = $this->hash($transactionId,
             $messageId,
-            $itemsChain,
+            $this->getItemsChain($items),
             $buyer,
             $this->getProvider(),
             $subject,
@@ -191,7 +182,7 @@ class Api
                          'Provider' => $this->getProvider(),
                          'Message' => $message,
                          'Subject' => $subject,
-                         'Items' => $oitems,
+                         'Items' => $this->getSoapItems($items),
                          'Buyer' => $buyer->asSoapObject(),
                          'Hash' => $hash);
 
@@ -226,5 +217,34 @@ class Api
         return md5(implode("", $args));
     }
 
+    /**
+     * Returns an items chain string for our hash function
+     * @param $items
+     * @return string
+     */
+    protected function getItemsChain($items)
+    {
+        $itemsChain = '';
+        foreach ($items as $item) {
+            $itemsChain .= $item;
+        }
+
+        return $itemsChain;
+    }
+
+    /**
+     * Returns our items in a way we can send in a request
+     * @param $items
+     * @return array
+     */
+    protected function getSoapItems($items)
+    {
+        $oitems = array();
+        foreach ($items as $item) {
+            $oitems[] = $item->asSoapObject();
+        }
+
+        return $oitems;
+    }
 
 }
