@@ -14,7 +14,7 @@ use Payum\Core\Request\CaptureRequest;
 use Payum\Core\Model\ArrayObject;
 use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
-class PaymentCaptureAction extends PaymentAwareAction
+abstract class PaymentCaptureAction extends PaymentAwareAction
 {
     /**
      * @var Buyer
@@ -33,6 +33,10 @@ class PaymentCaptureAction extends PaymentAwareAction
      */
     protected $model;
 
+    abstract function execute($request);
+
+    abstract function supports($request);
+
     protected function prepareToPay($orderId, $Api)
     {
         $getOrder = \Order::model()->findByPk($orderId);
@@ -41,8 +45,6 @@ class PaymentCaptureAction extends PaymentAwareAction
 
         $this->model['Message'] = 'This is a payment of ' . $this->model['MerchantTransactionId'];
         $this->model['Subject'] = 'Payment of ' . $this->model['MerchantTransactionId'];
-
-        //do purchase call to the payment gateway using username and password.
 
         /* Capture Buyer information, all information are required */
 
