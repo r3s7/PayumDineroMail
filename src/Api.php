@@ -193,6 +193,52 @@ class Api
     }
 
     /**
+     * encapsulates the call to the DineroMail web service invoking the method
+     * DoPaymentWithCreditCard
+     * @link https://api.dineromail.com/dmapi.asmx?WSDL
+     *
+     * @param array $items items to create the payment
+     * @param DineroMailBuyer $buyer contains the buyer information
+     * @param string $transactionId an unique TX id
+     * @param string $message the API says this is optional, although we aren't currently treating it that way in our code here
+     * @param string $subject the API says this is optional, although we aren't currently treating it that way in our code here
+     */
+    public function doPaymentWithCreditCard(array $items, Buyer $buyer, CreditCard $creditCard, $transactionId, $message, $subject)
+    {
+        $messageId = $this->uniqueId();
+
+        $hash = $this->hash($transactionId,
+            $messageId,
+            $this->getItemsChain($items),
+            $buyer,
+            $creditCard,
+            $this->getProvider(),
+            $subject,
+            $message,
+            $this->getConnection()->getCredentials()->getPassword());
+
+
+        $request = array(
+            'Credential'                => $this->credentialsObject(),
+            'Crypt'                     => false,
+            'MerchantTransactionId'     => $transactionId,
+            'UniqueMessageId'           => $messageId,
+            'Provider'                  => $this->getProvider(),
+            'Message'                   => $message,
+            'Subject'                   => $subject,
+            'Items'                     => $this->getSoapItems($items),
+            'Buyer'                     => $buyer->asSoapObject(),
+            'CreditCard'                => $creditCard->asSoapObject(),
+            'Hash'                      => $hash
+        );
+
+        $result = $this->call("DoPaymentWithCreditCard", $request);
+
+        return $result->DoPaymentWithCreditCardResult;
+
+    }
+
+    /**
      * Returns an unique id for each service call
      *
      * @param void
