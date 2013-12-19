@@ -4,6 +4,7 @@ namespace Payum\DineroMail;
 use Payum\DineroMail\Api\Credentials;
 use Payum\DineroMail\Api\Gateway;
 use Payum\DineroMail\Api\Objects\Buyer;
+use Payum\DineroMail\Api\PaymentWithReferenceConnection;
 use Payum\DineroMail\Api\Connection;
 use Payum\DineroMail\Api\DMSoapClient;
 /**
@@ -60,7 +61,9 @@ class Api
             $gateway = new Gateway(self::DINEROMAIL_NS_GATEWAY, self::DINEROMAIL_WDSL_GATEWAY);
         }
 
-        $this->_connection = new Connection($credentials, $gateway, $config['encryption']);
+        // we'll want to use the appropriate type of connection here depending on which type of payment we're making
+//        $this->_connection = new PaymentWithReferenceConnection($credentials, $gateway, $config['encryption']);
+        $this->_connection = new Connection($credentials, $gateway);
 
         $this->setupClient();
     }
