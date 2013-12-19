@@ -5,16 +5,15 @@ namespace Payum\DineroMail\Api;
 /*
  * is the same SoapClient but with especial methods for retrieve information about DineroMail requests and responses
  * */
-class DineroMailSoapClient extends \SoapClient
+class CreditCardClient extends \SoapClient
 {
-
     public function getDineroMailLastResponse()
     {
         return simplexml_load_string(
             str_replace(
                 "soap:",
                 "",
-                $this->__last_response))->Body->DoPaymentWithReferenceResponse->DoPaymentWithReferenceResult;
+                $this->__last_response))->Body->DoPaymentWithCreditCardResponse->DoPaymentWithCreditCardResult;
     }
 
     public function getDineroMailLastRequest()
@@ -23,8 +22,6 @@ class DineroMailSoapClient extends \SoapClient
             str_replace(
                 "ns1:",
                 "",
-                str_replace("SOAP-ENV:", "", $this->__last_request)))->Body->DoPaymentWithReference;
+                str_replace("SOAP-ENV:", "", $this->__last_request)))->Body->DoPaymentWithCreditCard;
     }
-
-
 }

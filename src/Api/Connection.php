@@ -8,7 +8,7 @@ namespace Payum\DineroMail\Api;
  * @see Vendor_DineroMail_Credentials
  * @see Vendor_DineroMail_Gateway_Abstract
  */
-class Connection
+abstract class Connection
 {
 
     protected $_credentials = null;
@@ -32,4 +32,8 @@ class Connection
         return $this->_gateway;
     }
 
+    /**
+     * @return DMSoapClient
+     */
+    abstract function getClient();
 }

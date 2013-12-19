@@ -62,8 +62,11 @@ class Api
         }
 
         // we'll want to use the appropriate type of connection here depending on which type of payment we're making
-//        $this->_connection = new PaymentWithReferenceConnection($credentials, $gateway, $config['encryption']);
-        $this->_connection = new Connection($credentials, $gateway);
+        // if this is a reference connection
+//        $this->setConnection(new ReferenceConnection($credentials, $gateway, $config['encryption']));
+
+        // else if this is a credit card connection
+        $this->setConnection(new CreditCardConnection($credentials, $gateway, $config['encryption']));
 
         $this->setupClient();
     }
@@ -110,10 +113,7 @@ class Api
      */
     protected function setupClient()
     {
-
-        $this->_client = new DMSoapClient($this->getConnection()->getGateway()->getWdsl(),
-            array('trace' => 1,
-                  'exceptions' => 1));
+        $this->_client = $this->getConnection()->getClient();
     }
 
     /**
