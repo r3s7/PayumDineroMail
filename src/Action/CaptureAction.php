@@ -18,6 +18,7 @@ class CaptureAction extends PaymentAwareAction
 {
 
 
+
     public function execute($request)
     {
 
@@ -45,14 +46,12 @@ class CaptureAction extends PaymentAwareAction
             $unSuglify = explode('-', $model['MerchantTransactionId']);
 
             $getPayment = \Payment::model()->findByPk($unSuglify[0]);
-            $getDineroMailConfig = \DineroMailConfig::model()->findByPk($getPayment->payment_method_id);
 
+            $getDineroMailConfig = \DineroMailConfig::model()->findByPk($getPayment->payment_method_id);
 
             $getOrder = \Order::model()->findByPk($getPayment->order_id);
 
             $getOrderItems = $getOrder->orderItems();
-
-
 
             //do purchase call to the payment gateway using username and password.
 
@@ -75,14 +74,12 @@ class CaptureAction extends PaymentAwareAction
             $buyer->setEmail($model['Email']);
             $buyer->setPhone($model['Phone']);
 
-
             /* Capture Items information, all information are required except Quantity and Currency
              * remember: you set the default currency and provider in the DineroMailAction Constructor.
              */
 
             $items = array();
             foreach ($getOrderItems as $item) {
-
 
                 /* You need pass the reference of the related DineroMailAction instance to the DineroMailItem instance,
                  * the Dine \CVarDumper::dump($items,10,true);
@@ -104,6 +101,9 @@ class CaptureAction extends PaymentAwareAction
                 $items[] = $currentItem;
             }
 
+            //uncomment this if you want a successfully COMPLETED transaction in sandbox
+            $model['MerchantTransactionId'] ='1';
+
             /* Execute the transaction */
 
             try {
@@ -111,108 +111,83 @@ class CaptureAction extends PaymentAwareAction
                 $Api->doPaymentWithReference(
                     $items,
                     $buyer,
-                    $model['MerchantTransactionId'], //change this value to "1" in sandbox
+                    $model['MerchantTransactionId'],
                     $model['Message'],
                     $model['Subject']
                 );
 
 
-
                 if ($Api->getClient()->getDineroMailLastResponse()->Status == "PENDING") {
 
-                  /*$model['status'] = 'PENDING';
-                    $model['result'] = array(
-                        'VoucherUrl'            => '',
-                        'BarcodeImageUrl'       =>
-                        $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
-                        'MerchantTransactionId' =>
-                        $Api->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                        'Message'               =>
-                        $Api->getClient()->getDineroMailLastResponse()->Message,
-                        'UniqueMessageId'       =>
-                        $Api->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                        'Status'                =>
-                        $Api->getClient()->getDineroMailLastResponse()->Status,
-                    );*/
-
-                    $getPayment->bank_transfer_reference = array(
-                        'BarcodeImageUrl' => $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl
-                    );
-                    $getPayment->bank_transfer_reference = serialize($getPayment->bank_transfer_reference);
+                    $getPayment->status = 'PENDING';
+                    $getPayment->bank_transfer_reference = $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl;
                     $getPayment->save();
-
-                    header("location{$request->getModel()->activeRecord->_after_url}");
+                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
 
                 /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
-                /* (I think this thing applies only for IPN)
+                /* (I think this thing applies only for sandbox tests)
                  * */
                 if ($Api->getClient()->getDineroMailLastResponse()->Status == "COMPLETED") {
 
-                  /* $model['status'] = 'COMPLETED';
-                    $model['result'] = array(
-                        'VoucherUrl'            =>
-                        $Api->getClient()->getDineroMailLastResponse()->VoucherUrl,
-                        'BarcodeImageUrl'       =>
-                        $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
-                        'MerchantTransactionId' =>
-                        $Api->getClient()->getDineroMailLastResponse()->MerchantTransactionId,
-                        'Message'               =>
-                        $Api->getClient()->getDineroMailLastResponse()->Message,
-                        'UniqueMessageId'       =>
-                        $Api->getClient()->getDineroMailLastResponse()->UniqueMessageId,
-                        'Status'                =>
-                        $Api->getClient()->getDineroMailLastResponse()->Status,
-                    );*/
-
-                    $getPayment->bank_transfer_reference = array(
-                        'BarcodeImageUrl' => $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl,
-                        'VoucherUrl'      => $Api->getClient()->getDineroMailLastResponse()->VoucherUrl
-
-                    );
-                    $getPayment->bank_transfer_reference = serialize($getPayment->bank_transfer_reference);
+                    $getPayment->status = 'COMPLETED';
+                    $getPayment->bank_transfer_reference = $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl;
                     $getPayment->save();
-
-                    header("location{$request->getModel()->activeRecord->_after_url}");
+                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
 
 
                 if ($Api->getClient()->getDineroMailLastResponse()->Status == "DENIED") {
-                    //$model['status'] = 'DENIED';
-                    $getPayment->status = 'failed';
-                    $getPayment->save();
+
+                    if($getPayment->status !== 'COMPLETED'){
+                        $getPayment->status = 'DENIED';
+                        $getPayment->save();
+                    }
+                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
 
                 if ($Api->getClient()->getDineroMailLastResponse()->Status == "ERROR") {
-                  //$model['status'] = 'ERROR';
-                    $getPayment->status = 'failed';
-                    $getPayment->save();
+
+                    if($getPayment->status !== 'COMPLETED'){
+                        $getPayment->status = 'ERROR';
+                        $getPayment->save();
+                    }
+                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
+
                 }
 
 
             } catch (DineroMailException $e) {
 
-                //$model['status'] = 'ERROR';
-                $getPayment->status = 'failed';
-                $getPayment->save();
+                if($getPayment->status !== 'COMPLETED'){
+                    $getPayment->status = 'ERROR';
+                    $getPayment->save();
+                }
+                \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
             }
 
 
         } else {
 
-            //$model['status'] = 'ERROR';
+
             throw new \CHttpException(400, \Yii::t('app', 'bad request'));
         }
 
-\CVarDumper::dump($request->getModel()->activeRecord->_after_url,10,true);
-       //$request->setModel($model);
+
     }
 
     public function supports($request)
     {
 
-        return true;
-        /*  $request instanceof CaptureRequest &&
-          $request->getModel() instanceof \ArrayAccess;*/
+        $paymentName = explode('-',$request->getModel()->activeRecord->paymentName);
+        $paymentMethod = $paymentName[0];
+
+        if($paymentMethod == 'DineroMail'){
+            return true;
+
+        }else{
+            return false;
+        }
+
     }
 }
