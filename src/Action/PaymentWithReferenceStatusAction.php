@@ -10,6 +10,7 @@ class PaymentWithReferenceStatusAction implements ActionInterface
     {
         $model = $request->getModel();
 
+        // @TODO: used by the CC system, maybe move this into a different class and take it out here?
         if ('PENDING' == isset($model['status'])) {
             $request->markPending();
 
