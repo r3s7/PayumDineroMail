@@ -101,8 +101,9 @@ class CaptureAction extends PaymentAwareAction
                 $items[] = $currentItem;
             }
 
-            //uncomment this if you want a successfully COMPLETED transaction in sandbox
-            $model['MerchantTransactionId'] ='1';
+            //uncomment this if you want a successfully transaction in sandbox
+            //set in 1 for COMPLETED status and 2 for PENDING status (other values retrieves DENIED status)
+            //$model['MerchantTransactionId'] ='1';
 
             /* Execute the transaction */
 
