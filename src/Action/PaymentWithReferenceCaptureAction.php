@@ -61,8 +61,8 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
             try {
                 //trying to execute the DineroMail transaction through the doPaymentWithReference function
                 $Api->doPaymentWithReference(
-                    $items,
-                    $buyer,
+                    $this->items,
+                    $this->buyer,
                     $model['MerchantTransactionId'],
                     $model['Message'],
                     $model['Subject']
