@@ -14,7 +14,7 @@ use Payum\Core\Request\CaptureRequest;
 use Payum\Core\Model\ArrayObject;
 use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
-class CaptureAction extends PaymentAwareAction
+class PaymentWithReferenceCaptureAction extends PaymentAwareAction
 {
 
 
