@@ -67,8 +67,6 @@ class Api
 
         // else if this is a credit card connection
         $this->setConnection(new CreditCardConnection($credentials, $gateway, $config['encryption']));
-
-        $this->setupClient();
     }
 
     public function setConnection(Connection $connection)
@@ -103,17 +101,7 @@ class Api
 
     public function getClient()
     {
-        return $this->_client;
-    }
-
-    /**
-     * Setups the soap client object
-     *
-     * @return SoapClient the soap object
-     */
-    protected function setupClient()
-    {
-        $this->_client = $this->getConnection()->getClient();
+        return $this->getConnection()->getClient();
     }
 
     /**
