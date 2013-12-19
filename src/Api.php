@@ -4,7 +4,8 @@ namespace Payum\DineroMail;
 use Payum\DineroMail\Api\Credentials;
 use Payum\DineroMail\Api\Gateway;
 use Payum\DineroMail\Api\Objects\Buyer;
-use Payum\DineroMail\Api\PaymentWithReferenceConnection;
+use Payum\DineroMail\Api\ReferenceConnection;
+use Payum\DineroMail\Api\CreditCardConnection;
 use Payum\DineroMail\Api\Connection;
 use Payum\DineroMail\Api\DMSoapClient;
 /**
@@ -63,10 +64,10 @@ class Api
 
         // we'll want to use the appropriate type of connection here depending on which type of payment we're making
         // if this is a reference connection
-//        $this->setConnection(new ReferenceConnection($credentials, $gateway, $config['encryption']));
+        $this->setConnection(new ReferenceConnection($credentials, $gateway, $config['encryption']));
 
         // else if this is a credit card connection
-        $this->setConnection(new CreditCardConnection($credentials, $gateway, $config['encryption']));
+//        $this->setConnection(new CreditCardConnection($credentials, $gateway, $config['encryption']));
     }
 
     public function setConnection(Connection $connection)

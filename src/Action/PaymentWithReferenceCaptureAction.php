@@ -25,23 +25,20 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
             $request->getModel()->getDetails()->getId()
         );
 
-        $model = unserialize($getPayumPaymentDetails->activeRecord->attributes['_details']);
+        $this->model = unserialize($getPayumPaymentDetails->activeRecord->attributes['_details']);
 
         if (
-            array_key_exists('MerchantTransactionId', $model) &&
-            array_key_exists('Name', $model) &&
-            array_key_exists('LastName', $model) &&
-            array_key_exists('Address', $model) &&
-            array_key_exists('City', $model) &&
-            array_key_exists('Country', $model) &&
-            array_key_exists('Email', $model) &&
-            array_key_exists('Phone', $model)
+            array_key_exists('MerchantTransactionId', $this->model) &&
+            array_key_exists('Name', $this->model) &&
+            array_key_exists('LastName', $this->model) &&
+            array_key_exists('Address', $this->model) &&
+            array_key_exists('City', $this->model) &&
+            array_key_exists('Country', $this->model) &&
+            array_key_exists('Email', $this->model) &&
+            array_key_exists('Phone', $this->model)
         ) {
 
-            $model['Message'] = 'This is a payment of '. $model['MerchantTransactionId'];
-            $model['Subject'] = 'Payment of '. $model['MerchantTransactionId'];
-
-            $unSuglify = explode('-', $model['MerchantTransactionId']);
+            $unSuglify = explode('-', $this->model['MerchantTransactionId']);
 
             $getPayment = \Payment::model()->findByPk($unSuglify[0]);
 
@@ -63,9 +60,9 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
                 $Api->doPaymentWithReference(
                     $this->items,
                     $this->buyer,
-                    $model['MerchantTransactionId'],
-                    $model['Message'],
-                    $model['Subject']
+                    $this->model['MerchantTransactionId'],
+                    $this->model['Message'],
+                    $this->model['Subject']
                 );
 
 
