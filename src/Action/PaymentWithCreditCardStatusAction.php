@@ -4,19 +4,26 @@ namespace Payum\DineroMail\Action;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\StatusRequestInterface;
 use Payum\Core\Request\BinaryMaskStatusRequest;
+use Payum\Core\Bridge\Spl\ArrayObject;
 
 class PaymentWithCreditCardStatusAction implements ActionInterface
 {
     public function execute($request)
     {
-        $status = $request->getStatus();
+        /** @var $request \Payum\Core\Request\StatusRequestInterface */
+        if (false == $this->supports($request)) {
+            throw RequestNotSupportedException::createActionNotSupported($this, $request);
+        }
 
-        // @TODO: we'll need to adjust this shortly
-        $request->markNew();
-        return;
+        $model = new ArrayObject($request->getModel());
 
         // used by the CC system
-        if ('PENDING' == $status) {
+        if (null === $model['status']) {
+            $request->markNew();
+            return;
+        }
+
+        if('PENDING' === $model['status']) {
             $request->markPending();
 
             return;
@@ -25,19 +32,19 @@ class PaymentWithCreditCardStatusAction implements ActionInterface
         /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
         /* (I think this thing applies only for IPN)
          * */
-        if ('COMPLETED' == $status) {
+        if ('COMPLETED' == $model['status']) {
             $request->markSuccess();
 
             return;
         }
 
-        if ('DENIED' == $status) {
+        if ('DENIED' == $model['status']) {
             $request->markFailed();
 
             return;
         }
 
-        if ('ERROR' == $status) {
+        if ('ERROR' == $model['status']) {
             $request->markFailed();
 
             return;
@@ -48,14 +55,9 @@ class PaymentWithCreditCardStatusAction implements ActionInterface
 
     public function supports($request)
     {
-        $paymentName = explode('-', $request->getModel()->activeRecord->paymentName);
-        $paymentMethod = $paymentName[0];
-
-        if ($request instanceof BinaryMaskStatusRequest && $paymentMethod == 'DineroMailCC') {
-            return true;
-        } else {
-            return false;
-        }
-
+        return
+            $request instanceof BinaryMaskStatusRequest &&
+            $request->getModel() instanceof \ArrayAccess
+            ;
     }
 }

@@ -1,6 +1,9 @@
 <?php
 namespace Payum\DineroMail;
 
+use Payum\Core\Action\ExecuteSameRequestWithModelDetailsAction;
+use Payum\Core\Extension\EndlessCycleDetectorExtension;
+
 use Payum\DineroMail\Action\PaymentWithCreditCardCaptureAction;
 use Payum\DineroMail\Action\PaymentWithCreditCardStatusAction;
 use Payum\DineroMail\Action\PaymentWithReferenceCaptureAction;
@@ -35,11 +38,17 @@ abstract class PaymentFactory
 
         /* in third place, I need append an instance of the action DoPaymentWithReference to the payment */
 
+        $payment->addExtension(new EndlessCycleDetectorExtension);
+
         // in the future, we'll work on figuring out from our config with type of actions we want to use here
         $payment->addAction(new PaymentWithCreditCardCaptureAction());
         $payment->addAction(new PaymentWithCreditCardStatusAction());
-        $payment->addAction(new PaymentWithReferenceCaptureAction);
-        $payment->addAction(new PaymentWithReferenceStatusAction);
+
+        $payment->addAction(new ExecuteSameRequestWithModelDetailsAction);
+
+
+//        $payment->addAction(new PaymentWithReferenceCaptureAction);
+//        $payment->addAction(new PaymentWithReferenceStatusAction);
 
          /*
         // CaptureAction(ApiUser[Slugified String], ApiPassword[String], Encryption[boolean], SanBox[boolean])

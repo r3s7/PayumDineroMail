@@ -23,6 +23,12 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
     public function execute($request)
     {
+        /** @var $request CaptureRequest */
+        if (false == $this->supports($request)) {
+            throw RequestNotSupportedException::createActionNotSupported($this, $request);
+        }
+
+        $model = $request->getModel();
         $getPayment = $request->getPayment();
         $this->model = $getPayment->getPaymentDetails();
 
@@ -46,7 +52,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
             //uncomment this if you want a successfully transaction in sandbox
             //set in 1 for COMPLETED status and 2 for PENDING status (other values retrieves DENIED status)
-            $this->model['MerchantTransactionId'] ='1';
+            //$this->model['MerchantTransactionId'] ='1';
 
             try {
                 // send off our DineroMail transaction to the doPaymentWithCreditCard function
@@ -62,13 +68,12 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
                 if ($result->Status == "PENDING") {
 
-                    $getPayment->status = 'PENDING';
+                    $model['status'] = 'PENDING';
 
                     // @TODO: think we don't need this any more, so should we just leave it out?
                     // do we want to add anything else in instead?
                     // $getPayment->bank_transfer_reference = $result->BarcodeImageUrl;
                     $getPayment->save();
-                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
 
                 /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
@@ -76,42 +81,44 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
                  * */
                 if ($result->Status == "COMPLETED") {
 
+                    $model['status'] = 'COMPLETED';
+
                     $getPayment->status = 'COMPLETED';
                     // @TODO: think we don't need this any more, so should we just leave it out?
                     // do we want to add anything else in instead?
                     // $getPayment->bank_transfer_reference = $result->BarcodeImageUrl;
                     $getPayment->save();
-                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
 
 
                 if ($result->Status == "DENIED") {
 
+                    $model['status'] = 'DENIED';
+
                     if($getPayment->status !== 'COMPLETED'){
                         $getPayment->status = 'DENIED';
                         $getPayment->save();
                     }
-                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
 
                 if ($result->Status == "ERROR") {
+                    $model['status'] = 'ERROR';
 
                     if($getPayment->status !== 'COMPLETED'){
                         $getPayment->status = 'ERROR';
                         $getPayment->save();
                     }
-                    \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
-
                 }
 
 
             } catch (DineroMailException $e) {
 
+                $model['status'] = 'ERROR';
+
                 if($getPayment->status !== 'COMPLETED'){
                     $getPayment->status = 'ERROR';
                     $getPayment->save();
                 }
-                \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
             }
 
 
@@ -138,23 +145,9 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
     public function supports($request)
     {
-        $isRightStatus = ($request instanceof \WDCustomSecuredCaptureRequest);
-
-        if(!$isRightStatus) {
-            return false;
-        }
-
-        $isRightModel = ($request->getPayment()->getPaymentDetails() instanceof PaymentDetailsActiveRecordWrapper);
-
-        $paymentName = explode('-',$request->getModel()->activeRecord->paymentName);
-        $paymentMethod = $paymentName[0];
-
-        if($isRightStatus && $isRightModel && $paymentMethod == 'DineroMailCC'){
-            return true;
-
-        }else{
-            return false;
-        }
-
+        return
+            $request instanceof \WDCustomSecuredCaptureRequest &&
+            $request->getModel() instanceof \ArrayAccess
+            ;
     }
 }
