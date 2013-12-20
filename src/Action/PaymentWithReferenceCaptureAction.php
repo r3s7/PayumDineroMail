@@ -57,7 +57,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
 
             try {
                 //trying to execute the DineroMail transaction through the doPaymentWithReference function
-                $Api->doPaymentWithReference(
+                $result = $Api->doPaymentWithReference(
                     $this->items,
                     $this->buyer,
                     $this->model['MerchantTransactionId'],
@@ -66,7 +66,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
                 );
 
 
-                if ($Api->getClient()->getDineroMailLastResponse()->Status == "PENDING") {
+                if ($result->Status == "PENDING") {
 
                     $getPayment->status = 'PENDING';
                     $getPayment->bank_transfer_reference = $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl;
@@ -77,7 +77,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
                 /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
                 /* (I think this thing applies only for sandbox tests)
                  * */
-                if ($Api->getClient()->getDineroMailLastResponse()->Status == "COMPLETED") {
+                if ($result->Status == "COMPLETED") {
 
                     $getPayment->status = 'COMPLETED';
                     $getPayment->bank_transfer_reference = $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl;
@@ -86,7 +86,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
                 }
 
 
-                if ($Api->getClient()->getDineroMailLastResponse()->Status == "DENIED") {
+                if ($result->Status == "DENIED") {
 
                     if($getPayment->status !== 'COMPLETED'){
                         $getPayment->status = 'DENIED';
@@ -95,7 +95,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
                     \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
 
-                if ($Api->getClient()->getDineroMailLastResponse()->Status == "ERROR") {
+                if ($result->Status == "ERROR") {
 
                     if($getPayment->status !== 'COMPLETED'){
                         $getPayment->status = 'ERROR';
