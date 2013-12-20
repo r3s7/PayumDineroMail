@@ -69,7 +69,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
                 if ($result->Status == "PENDING") {
 
                     $getPayment->status = 'PENDING';
-                    $getPayment->bank_transfer_reference = $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl;
+                    $getPayment->bank_transfer_reference = $result->BarcodeImageUrl;
                     $getPayment->save();
                     \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
@@ -80,7 +80,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
                 if ($result->Status == "COMPLETED") {
 
                     $getPayment->status = 'COMPLETED';
-                    $getPayment->bank_transfer_reference = $Api->getClient()->getDineroMailLastResponse()->BarcodeImageUrl;
+                    $getPayment->bank_transfer_reference = $result->BarcodeImageUrl;
                     $getPayment->save();
                     \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
                 }
