@@ -9,10 +9,14 @@ class PaymentWithCreditCardStatusAction implements ActionInterface
 {
     public function execute($request)
     {
-        $model = $request->getModel();
+        $status = $request->getStatus();
+
+        // @TODO: we'll need to adjust this shortly
+        $request->markNew();
+        return;
 
         // used by the CC system
-        if ('PENDING' == isset($model['status'])) {
+        if ('PENDING' == $status) {
             $request->markPending();
 
             return;
@@ -21,19 +25,19 @@ class PaymentWithCreditCardStatusAction implements ActionInterface
         /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
         /* (I think this thing applies only for IPN)
          * */
-        if ('COMPLETED' == $model['status']) {
+        if ('COMPLETED' == $status) {
             $request->markSuccess();
 
             return;
         }
 
-        if ('DENIED' == $model['status']) {
+        if ('DENIED' == $status) {
             $request->markFailed();
 
             return;
         }
 
-        if ('ERROR' == $model['status']) {
+        if ('ERROR' == $status) {
             $request->markFailed();
 
             return;
