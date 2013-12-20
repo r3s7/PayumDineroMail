@@ -125,6 +125,17 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
 
     }
 
+    protected function prepareToPay($orderId, $Api)
+    {
+        parent::prepareToPay($orderId, $Api);
+
+        // we require these fields for references, but they aren't always required
+        $this->buyer->setAddress($this->model['Address']);
+        $this->buyer->setCity($this->model['City']);
+        $this->buyer->setCountry($this->model['Country']);
+        $this->buyer->setPhone($this->model['Phone']);
+    }
+
     public function supports($request)
     {
 

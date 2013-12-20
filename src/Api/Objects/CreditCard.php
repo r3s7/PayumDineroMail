@@ -8,6 +8,8 @@
 
 namespace Payum\DineroMail\Api\Objects;
 
+use Payum\Core\Security\SensitiveValue;
+
 class CreditCard extends BaseObject
 {
 
@@ -66,7 +68,7 @@ class CreditCard extends BaseObject
 
     public function setExpirationDate(SensitiveValue $expirationDate)
     {
-        $this->_address = $address;
+        $this->_expirationDate = $expirationDate;
     }
 
     public function setSecurityCode(SensitiveValue $securityCode)

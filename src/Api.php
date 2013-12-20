@@ -4,6 +4,7 @@ namespace Payum\DineroMail;
 use Payum\DineroMail\Api\Credentials;
 use Payum\DineroMail\Api\Gateway;
 use Payum\DineroMail\Api\Objects\Buyer;
+use Payum\DineroMail\Api\Objects\CreditCard;
 use Payum\DineroMail\Api\ReferenceConnection;
 use Payum\DineroMail\Api\CreditCardConnection;
 use Payum\DineroMail\Api\Connection;

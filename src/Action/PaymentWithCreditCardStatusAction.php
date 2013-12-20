@@ -44,7 +44,7 @@ class PaymentWithCreditCardStatusAction implements ActionInterface
     public function supports($request)
     {
         return
-            $request instanceof StatusRequestInterface &&
+            $request instanceof BinaryMaskStatusRequest &&
             $request->getModel() instanceof \ArrayAccess
             ;
     }

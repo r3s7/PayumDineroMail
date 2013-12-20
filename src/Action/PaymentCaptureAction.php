@@ -56,13 +56,10 @@ abstract class PaymentCaptureAction extends PaymentAwareAction
         // @TODO: instead of passing in the whole api model, let's just pass the namespace?
         // seems to be all we're using in there
         $this->buyer = new Buyer($Api);
+
         $this->buyer->setName($this->model['Name']);
         $this->buyer->setLastName($this->model['LastName']);
-        $this->buyer->setAddress($this->model['Address']);
-        $this->buyer->setCity($this->model['City']);
-        $this->buyer->setCountry($this->model['Country']);
         $this->buyer->setEmail($this->model['Email']);
-        $this->buyer->setPhone($this->model['Phone']);
 
         /* Capture Items information, all information are required except Quantity and Currency
          * remember: you set the default currency and provider in the DineroMailAction Constructor.

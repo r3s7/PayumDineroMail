@@ -10,6 +10,7 @@ use Payum\DineroMail\Action\PaymentCaptureAction;
 use Payum\DineroMail\Api\DineroMailException;
 use Payum\DineroMail\Api;
 use Payum\DineroMail\Api\Objects\Buyer;
+use Payum\DineroMail\Api\Objects\CreditCard;
 use Payum\DineroMail\Api\Objects\Item;
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\Request\CaptureRequest;
@@ -18,42 +19,24 @@ use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
 class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 {
+    protected $creditCard;
+
     public function execute($request)
     {
-        $getPayumPaymentDetails = PaymentDetailsActiveRecordWrapper::findModelById(
-            'payum_payment',
-            $request->getModel()->getDetails()->getId()
-        );
+        $getPayment = $request->getPayment();
+        $this->model = $getPayment->getPaymentDetails();
 
-        $model = unserialize($getPayumPaymentDetails->activeRecord->attributes['_details']);
+        if (
+            isset($this->model['MerchantTransactionId']) &&
+            isset($this->model['Name']) &&
+            isset($this->model['LastName']) &&
+            isset($this->model['Email']) &&
+            isset($this->model['Installment']) &&
+            isset($this->model['Holder']) &&
+            isset($this->model['DocumentNumber'])
+        ) {
 
-        $model = new ArrayObject($request->getModel());
-        $test = $model->toUnsafeArray();
-
-        print_r($getPayumPaymentDetails);
-
-//
-//        if (
-//            array_key_exists('MerchantTransactionId', $model) &&
-//            array_key_exists('Name', $model) &&
-//            array_key_exists('LastName', $model) &&
-//            array_key_exists('Address', $model) &&
-//            array_key_exists('City', $model) &&
-//            array_key_exists('Country', $model) &&
-//            array_key_exists('Email', $model) &&
-//            array_key_exists('Phone', $model)
-//        ) {
-//
-            // @TODO: work out how we handle getting this model, but it is *definitely NOT* from a saved place in the DB :-)
-            $this->model = ''; // ??? :-)
-
-            // @TODO: let's clean this up down the road, but not right now
-
-            $unSuglify = explode('-', $this->model['MerchantTransactionId']);
-
-            $getPayment = \Payment::model()->findByPk($unSuglify[0]);
-
-            $getDineroMailConfig = \DineroMailConfig::model()->findByPk($getPayment->payment_method_id);
+            $getDineroMailConfig = \DineroMailCreditCardConfig::model()->findByPk($getPayment->payment_method_id);
 
             /* @var $Api Api */
             // get back our new DineroMailAction instance
@@ -61,12 +44,16 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
             $this->prepareToPay($getPayment->order_id, $Api);
 
+            //uncomment this if you want a successfully transaction in sandbox
+            //set in 1 for COMPLETED status and 2 for PENDING status (other values retrieves DENIED status)
+            $this->model['MerchantTransactionId'] ='1';
+
             try {
                 // send off our DineroMail transaction to the doPaymentWithCreditCard function
                 $result = $Api->doPaymentWithCreditCard(
                     $this->items,
                     $this->buyer,
-                    $creditCard, // @TODO: oh wait, where did this come from? ;-)
+                    $this->creditCard,
                     $this->model['MerchantTransactionId'],
                     $this->model['Message'],
                     $this->model['Subject']
@@ -128,20 +115,41 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
             }
 
 
-//        } else {
-//
-//
-//            throw new \CHttpException(400, \Yii::t('app', 'bad request'));
-//        }
+        } else {
+            throw new \CHttpException(400, \Yii::t('app', 'bad request'));
+        }
+    }
+
+    public function prepareToPay($orderId, $Api)
+    {
+        parent::prepareToPay($orderId, $Api);
+
+        // @TODO: instead of passing in the whole api model, let's just pass the namespace?
+        // seems to be all we're using in there
+        $this->creditCard = new CreditCard($Api);
+
+        $this->creditCard->setInstallment($this->model['Installment']);
+        $this->creditCard->setCreditCardNumber($this->model['CreditCardNumber']);
+        $this->creditCard->setHolder($this->model['Holder']);
+        $this->creditCard->setExpirationDate($this->model['ExpirationDate']);
+        $this->creditCard->setSecurityCode($this->model['SecurityCode']);
+        $this->creditCard->setDocumentNumber($this->model['DocumentNumber']);
     }
 
     public function supports($request)
     {
+        $isRightStatus = !($request instanceof WDCustomBinaryMaskStatusRequest);
+
+        if(!$isRightStatus) {
+            return false;
+        }
+
+        $isRightModel = ($request->getPayment()->getPaymentDetails() instanceof PaymentDetailsActiveRecordWrapper);
 
         $paymentName = explode('-',$request->getModel()->activeRecord->paymentName);
         $paymentMethod = $paymentName[0];
 
-        if($paymentMethod == 'DineroMailCC'){
+        if($isRightStatus && $isRightModel && $paymentMethod == 'DineroMailCC'){
             return true;
 
         }else{
