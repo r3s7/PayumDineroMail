@@ -1,6 +1,8 @@
 <?php
 namespace Payum\DineroMail;
 
+use Payum\DineroMail\Action\PaymentWithCreditCardCaptureAction;
+use Payum\DineroMail\Action\PaymentWithCreditCardStatusAction;
 use Payum\DineroMail\Action\PaymentWithReferenceCaptureAction;
 use Payum\DineroMail\Action\PaymentWithReferenceStatusAction;
 use Payum\Core\Payment;
@@ -34,10 +36,10 @@ abstract class PaymentFactory
         /* in third place, I need append an instance of the action DoPaymentWithReference to the payment */
 
         // in the future, we'll work on figuring out from our config with type of actions we want to use here
+        $payment->addAction(new PaymentWithCreditCardCaptureAction());
+        $payment->addAction(new PaymentWithCreditCardStatusAction());
         $payment->addAction(new PaymentWithReferenceCaptureAction);
-
         $payment->addAction(new PaymentWithReferenceStatusAction);
-
 
          /*
         // CaptureAction(ApiUser[Slugified String], ApiPassword[String], Encryption[boolean], SanBox[boolean])
