@@ -62,12 +62,9 @@ class Api
             $gateway = new Gateway(self::DINEROMAIL_NS_GATEWAY, self::DINEROMAIL_WDSL_GATEWAY);
         }
 
-        // we'll want to use the appropriate type of connection here depending on which type of payment we're making
-        // if this is a reference connection
-        $this->setConnection(new ReferenceConnection($credentials, $gateway, $config['encryption']));
-
-        // else if this is a credit card connection
-//        $this->setConnection(new CreditCardConnection($credentials, $gateway, $config['encryption']));
+        // we may want to use the appropriate type of connection here depending on which type of payment we're making
+        // but for now, looks like we can get by with just one
+        $this->setConnection(new Connection($credentials, $gateway, $config['encryption']));
     }
 
     public function setConnection(Connection $connection)
@@ -75,6 +72,10 @@ class Api
         return $this->_connection = $connection;
     }
 
+    /**
+     * Returns a setup connection
+     * @return Connection
+     */
     public function getConnection()
     {
         return $this->_connection;
