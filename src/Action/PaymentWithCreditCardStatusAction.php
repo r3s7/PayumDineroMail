@@ -3,6 +3,7 @@ namespace Payum\DineroMail\Action;
 
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\StatusRequestInterface;
+use Payum\Core\Request\BinaryMaskStatusRequest;
 
 class PaymentWithCreditCardStatusAction implements ActionInterface
 {
@@ -43,9 +44,14 @@ class PaymentWithCreditCardStatusAction implements ActionInterface
 
     public function supports($request)
     {
-        return
-            $request instanceof BinaryMaskStatusRequest &&
-            $request->getModel() instanceof \ArrayAccess
-            ;
+        $paymentName = explode('-', $request->getModel()->activeRecord->paymentName);
+        $paymentMethod = $paymentName[0];
+
+        if ($request instanceof BinaryMaskStatusRequest && $paymentMethod == 'DineroMailCC') {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

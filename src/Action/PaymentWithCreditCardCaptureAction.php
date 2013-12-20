@@ -138,7 +138,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
     public function supports($request)
     {
-        $isRightStatus = !($request instanceof WDCustomBinaryMaskStatusRequest);
+        $isRightStatus = ($request instanceof \WDCustomSecuredCaptureRequest);
 
         if(!$isRightStatus) {
             return false;
