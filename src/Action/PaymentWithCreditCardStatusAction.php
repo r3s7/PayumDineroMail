@@ -3,14 +3,27 @@ namespace Payum\DineroMail\Action;
 
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\StatusRequestInterface;
+use Payum\Core\Request\BinaryMaskStatusRequest;
+use Payum\Core\Bridge\Spl\ArrayObject;
 
-class StatusAction implements ActionInterface
+class PaymentWithCreditCardStatusAction implements ActionInterface
 {
     public function execute($request)
     {
-        $model = $request->getModel();
+        /** @var $request \Payum\Core\Request\StatusRequestInterface */
+        if (false == $this->supports($request)) {
+            throw RequestNotSupportedException::createActionNotSupported($this, $request);
+        }
 
-        if ('PENDING' == isset($model['status'])) {
+        $model = new ArrayObject($request->getModel());
+
+        // used by the CC system
+        if (null === $model['status']) {
+            $request->markNew();
+            return;
+        }
+
+        if('PENDING' === $model['status']) {
             $request->markPending();
 
             return;
@@ -43,7 +56,7 @@ class StatusAction implements ActionInterface
     public function supports($request)
     {
         return
-            $request instanceof StatusRequestInterface &&
+            $request instanceof BinaryMaskStatusRequest &&
             $request->getModel() instanceof \ArrayAccess
             ;
     }

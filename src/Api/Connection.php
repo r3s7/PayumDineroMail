@@ -13,15 +13,13 @@ class Connection
 
     protected $_credentials = null;
     protected $_gateway = null;
-    protected $_crypt = false;
 
 
     public function __construct(Credentials $credentials,
-                                Gateway $gateway, $crypt = false)
+                                Gateway $gateway)
     {
         $this->_credentials = $credentials;
         $this->_gateway = $gateway;
-        $this->_crypt = $crypt;
     }
 
     public function getCredentials()
@@ -34,4 +32,13 @@ class Connection
         return $this->_gateway;
     }
 
+    /**
+     * @return SoapClient
+     */
+    public function getClient()
+    {
+        return new \SoapClient($this->getGateway()->getWdsl(),
+            array('trace' => 1,
+                'exceptions' => 1));
+    }
 }

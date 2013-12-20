@@ -4,6 +4,9 @@ namespace Payum\DineroMail;
 use Payum\DineroMail\Api\Credentials;
 use Payum\DineroMail\Api\Gateway;
 use Payum\DineroMail\Api\Objects\Buyer;
+use Payum\DineroMail\Api\Objects\CreditCard;
+use Payum\DineroMail\Api\ReferenceConnection;
+use Payum\DineroMail\Api\CreditCardConnection;
 use Payum\DineroMail\Api\Connection;
 use Payum\DineroMail\Api\DMSoapClient;
 /**
@@ -60,9 +63,9 @@ class Api
             $gateway = new Gateway(self::DINEROMAIL_NS_GATEWAY, self::DINEROMAIL_WDSL_GATEWAY);
         }
 
-        $this->_connection = new Connection($credentials, $gateway, $config['encryption']);
-
-        $this->setupClient();
+        // we may want to use the appropriate type of connection here depending on which type of payment we're making
+        // but for now, looks like we can get by with just one
+        $this->setConnection(new Connection($credentials, $gateway, $config['encryption']));
     }
 
     public function setConnection(Connection $connection)
@@ -70,6 +73,10 @@ class Api
         return $this->_connection = $connection;
     }
 
+    /**
+     * Returns a setup connection
+     * @return Connection
+     */
     public function getConnection()
     {
         return $this->_connection;
@@ -97,20 +104,7 @@ class Api
 
     public function getClient()
     {
-        return $this->_client;
-    }
-
-    /**
-     * Setups the soap client object
-     *
-     * @return SoapClient the soap object
-     */
-    protected function setupClient()
-    {
-
-        $this->_client = new DMSoapClient($this->getConnection()->getGateway()->getWdsl(),
-            array('trace' => 1,
-                  'exceptions' => 1));
+        return $this->getConnection()->getClient();
     }
 
     /**
@@ -160,20 +154,11 @@ class Api
      */
     public function doPaymentWithReference(array $items, Buyer $buyer, $transactionId, $message, $subject)
     {
-
         $messageId = $this->uniqueId();
-        $itemsChain = '';
-        $oitems = array();
-
-        foreach ($items as $item) {
-            $itemsChain .= $item;
-            $oitems[] = $item->asSoapObject();
-        }
-
 
         $hash = $this->hash($transactionId,
             $messageId,
-            $itemsChain,
+            $this->getItemsChain($items),
             $buyer,
             $this->getProvider(),
             $subject,
@@ -188,13 +173,59 @@ class Api
                          'Provider' => $this->getProvider(),
                          'Message' => $message,
                          'Subject' => $subject,
-                         'Items' => $oitems,
+                         'Items' => $this->getSoapItems($items),
                          'Buyer' => $buyer->asSoapObject(),
                          'Hash' => $hash);
 
         $result = $this->call("DoPaymentWithReference", $request);
 
         return $result->DoPaymentWithReferenceResult;
+
+    }
+
+    /**
+     * encapsulates the call to the DineroMail web service invoking the method
+     * DoPaymentWithCreditCard
+     * @link https://api.dineromail.com/dmapi.asmx?WSDL
+     *
+     * @param array $items items to create the payment
+     * @param DineroMailBuyer $buyer contains the buyer information
+     * @param string $transactionId an unique TX id
+     * @param string $message the API says this is optional, although we aren't currently treating it that way in our code here
+     * @param string $subject the API says this is optional, although we aren't currently treating it that way in our code here
+     */
+    public function doPaymentWithCreditCard(array $items, Buyer $buyer, CreditCard $creditCard, $transactionId, $message, $subject)
+    {
+        $messageId = $this->uniqueId();
+
+        $hash = $this->hash($transactionId,
+            $messageId,
+            $this->getItemsChain($items),
+            $buyer,
+            $creditCard,
+            $this->getProvider(),
+            $subject,
+            $message,
+            $this->getConnection()->getCredentials()->getPassword());
+
+
+        $request = array(
+            'Credential'                => $this->credentialsObject(),
+            'Crypt'                     => false,
+            'MerchantTransactionId'     => $transactionId,
+            'UniqueMessageId'           => $messageId,
+            'Provider'                  => $this->getProvider(),
+            'Message'                   => $message,
+            'Subject'                   => $subject,
+            'Items'                     => $this->getSoapItems($items),
+            'Buyer'                     => $buyer->asSoapObject(),
+            'CreditCard'                => $creditCard->asSoapObject(),
+            'Hash'                      => $hash
+        );
+
+        $result = $this->call("DoPaymentWithCreditCard", $request);
+
+        return $result->DoPaymentWithCreditCardResult;
 
     }
 
@@ -223,5 +254,34 @@ class Api
         return md5(implode("", $args));
     }
 
+    /**
+     * Returns an items chain string for our hash function
+     * @param $items
+     * @return string
+     */
+    protected function getItemsChain($items)
+    {
+        $itemsChain = '';
+        foreach ($items as $item) {
+            $itemsChain .= $item;
+        }
+
+        return $itemsChain;
+    }
+
+    /**
+     * Returns our items in a way we can send in a request
+     * @param $items
+     * @return array
+     */
+    protected function getSoapItems($items)
+    {
+        $oitems = array();
+        foreach ($items as $item) {
+            $oitems[] = $item->asSoapObject();
+        }
+
+        return $oitems;
+    }
 
 }
