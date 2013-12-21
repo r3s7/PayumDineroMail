@@ -49,9 +49,10 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
 
             $this->prepareToPay($getPayment->order_id, $Api);
 
-            //uncomment this if you want a successfully transaction in sandbox
-            //set in 1 for COMPLETED status and 2 for PENDING status (other values retrieves DENIED status)
-            //$model['MerchantTransactionId'] ='1';
+            //set as 1 for COMPLETED status, 2 for PENDING status (other values cause DENIED status)
+            if ($Api->sandboxMode && $Api->testModeSettings != '') {
+                $this->model['MerchantTransactionId'] = $Api->testModeSettings;
+            }
 
             /* Execute the transaction */
 
