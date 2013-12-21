@@ -247,13 +247,13 @@ class Api
             'Credential'                => $this->credentialsObject(),
             'Crypt'                     => false,
             'MerchantTransactionId'     => $transactionId,
-            'UniqueMessageId'           => $messageId,
-            'Provider'                  => $this->getProvider(),
-            'Message'                   => $message,
-            'Subject'                   => $subject,
             'Items'                     => $this->getSoapItems($items),
             'Buyer'                     => $buyer->asSoapObject(),
+            'Provider' => $this->getProvider(),
             'CreditCard'                => $creditCard->asSoapObject(),
+            'Subject'                   => $subject,
+            'Message'                   => $message,
+            'UniqueMessageId'           => $messageId,
             'Hash'                      => $hash
         );
 
