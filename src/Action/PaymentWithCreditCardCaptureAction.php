@@ -52,7 +52,9 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
             //uncomment this if you want a successfully transaction in sandbox
             //set in 1 for COMPLETED status and 2 for PENDING status (other values retrieves DENIED status)
-            //$this->model['MerchantTransactionId'] ='1';
+            if(!$Api->isLive()) {
+                $this->model['MerchantTransactionId'] ='1';
+            }
 
             try {
                 // send off our DineroMail transaction to the doPaymentWithCreditCard function

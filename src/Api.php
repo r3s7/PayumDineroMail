@@ -39,6 +39,7 @@ class Api
     protected $_connection = null;
     protected $_client = null;
 
+    protected $_isLive;
 
     public function __construct(
         $config,
@@ -56,10 +57,10 @@ class Api
         $credentials = new Credentials($config['username'],$config['password']);
 
         if ($config['sandbox'] == true) {
-
+            $this->_isLive = false;
             $gateway = new Gateway(self::DINEROMAIL_NS_GATEWAY_SANDBOX, self::DINEROMAIL_WDSL_GATEWAY_SANDBOX);
         } else {
-
+            $this->_isLive = true;
             $gateway = new Gateway(self::DINEROMAIL_NS_GATEWAY, self::DINEROMAIL_WDSL_GATEWAY);
         }
 
@@ -105,6 +106,15 @@ class Api
     public function getClient()
     {
         return $this->getConnection()->getClient();
+    }
+
+    /**
+     * Whether we're in live mode or not
+     * @return bool
+     */
+    public function isLive()
+    {
+        return $this->_isLive;
     }
 
     /**
