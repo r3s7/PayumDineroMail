@@ -73,58 +73,25 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
 
                 if ($result->Status == "PENDING") {
-
                     $model['status'] = 'PENDING';
-
-                    // @TODO: think we don't need this any more, so should we just leave it out?
-                    // do we want to add anything else in instead?
-                    // $getPayment->bank_transfer_reference = $result->BarcodeImageUrl;
-                    $getPayment->save();
                 }
 
-                /* I have doubts here, I think this payment method never gets the COMPLETED status immediately
-                /* (I think this thing applies only for sandbox tests)
-                 * */
                 if ($result->Status == "COMPLETED") {
-
                     $model['status'] = 'COMPLETED';
-
-                    $getPayment->status = 'COMPLETED';
-                    // @TODO: think we don't need this any more, so should we just leave it out?
-                    // do we want to add anything else in instead?
-                    // $getPayment->bank_transfer_reference = $result->BarcodeImageUrl;
-                    $getPayment->save();
                 }
 
 
                 if ($result->Status == "DENIED") {
-
                     $model['status'] = 'DENIED';
-
-                    if($getPayment->status !== 'COMPLETED'){
-                        $getPayment->status = 'DENIED';
-                        $getPayment->save();
-                    }
                 }
 
                 if ($result->Status == "ERROR") {
                     $model['status'] = 'ERROR';
-
-                    if($getPayment->status !== 'COMPLETED'){
-                        $getPayment->status = 'ERROR';
-                        $getPayment->save();
-                    }
                 }
 
 
             } catch (DineroMailException $e) {
-
                 $model['status'] = 'ERROR';
-
-                if($getPayment->status !== 'COMPLETED'){
-                    $getPayment->status = 'ERROR';
-                    $getPayment->save();
-                }
             }
 
 
