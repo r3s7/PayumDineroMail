@@ -126,10 +126,10 @@ class CreditCard extends BaseObject
     {
         return new \SOAPVar(array(
                 'Installment'           => $this->_installment,
-                'CreditCardNumber'      => $this->_creditCardNumber, // @TODO: sensitive, won't come out right
+                'CreditCardNumber'      => $this->_creditCardNumber->get(), // gets and erases a sensitive value
                 'Holder'                => $this->_holder,
-                'ExpirationDate'        => $this->_expirationDate, // @TODO: sensitive, won't come out right
-                'SecurityCode'          => $this->_securityCode, // @TODO: sensitive, won't come out right
+                'ExpirationDate'        => $this->_expirationDate->get(), // gets and erases a sensitive value
+                'SecurityCode'          => $this->_securityCode->get(), // gets and erases a sensitive value
                 'DocumentNumber'        => $this->_documentNumber,
 
                 'Address'               => $this->_address,
@@ -148,16 +148,11 @@ class CreditCard extends BaseObject
 
     public function __toString()
     {
-
-        // @TODO: make sure we retrieve the CC Number that is sensitive (and stored in SensitiveValue) properly
-        // otherwise it will get erased before we can use it
-
-        return
-            $this->_installment .
-            $this->_creditCardNumber . // @TODO: sensitive, won't come out right
+        return $this->_installment .
+            $this->_creditCardNumber->peek() . // gets and leaves a sensitive value
             $this->_holder .
-            $this->_expirationDate . // @TODO: sensitive, won't come out right
-            $this->_securityCode . // @TODO: sensitive, won't come out right
+            $this->_expirationDate->peek() . // gets and leaves a sensitive value
+            $this->_securityCode->peek() . // gets and leaves a sensitive value
             $this->_documentNumber .
 
             $this->_address .
