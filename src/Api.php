@@ -26,8 +26,8 @@ class Api
     const DINEROMAIL_NS_GATEWAY_SANDBOX = "https://sandboxapi.dineromail.com/";
     const DINEROMAIL_WDSL_GATEWAY_SANDBOX = "https://sandboxapi.dineromail.com/dmapi.asmx?WSDL";
 
-    const DINEROMAIL_NS_GATEWAY = "https://sandboxapi.dineromail.com/";
-    const DINEROMAIL_WDSL_GATEWAY = "https://sandboxapi.dineromail.com/dmapi.asmx?WSDL";
+    const DINEROMAIL_NS_GATEWAY = "https://api.dineromail.com/";
+    const DINEROMAIL_WDSL_GATEWAY = "https://api.dineromail.com/dmapi.asmx?WSDL";
 
     //Possible values: rapipago, pagofacil, bapro, cobroexpress
     const DINEROMAIL_DEFAULT_PROVIDER = "pagofacil";
