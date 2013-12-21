@@ -53,7 +53,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
             // this will be set on a per item basis later on
             $Api->setCurrency($this->model['CurrencyCode']);
 
-            $this->prepareToPay($getPayment->order_id, $Api);
+            $this->prepareToPay($request, $Api);
 
             //set as 1 for COMPLETED status, 2 for PENDING status (other values cause DENIED status)
             if ($Api->getSandboxMode() && $Api->getTestModeSettings() != '') {
@@ -100,9 +100,9 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         }
     }
 
-    public function prepareToPay($orderId, $Api)
+    public function prepareToPay($request, $Api)
     {
-        parent::prepareToPay($orderId, $Api);
+        parent::prepareToPay($request, $Api);
 
         // @TODO: instead of passing in the whole api model, let's just pass the namespace?
         // seems to be all we're using in there

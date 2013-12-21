@@ -19,6 +19,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
 {
     public function execute($request)
     {
+        $model = $request->getModel();
 
         $getPayumPaymentDetails = PaymentDetailsActiveRecordWrapper::findModelById(
             'payum_payment',
@@ -47,7 +48,7 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
             $getOrder = \Order::model()->findByPk($getPayment->order_id);
             $Api = $getDineroMailConfig->getApi();
 
-            $this->prepareToPay($getPayment->order_id, $Api);
+            $this->prepareToPay($request, $Api);
 
             //set as 1 for COMPLETED status, 2 for PENDING status (other values cause DENIED status)
             if ($Api->sandboxMode && $Api->testModeSettings != '') {
@@ -126,9 +127,9 @@ class PaymentWithReferenceCaptureAction extends PaymentCaptureAction
 
     }
 
-    protected function prepareToPay($orderId, $Api)
+    protected function prepareToPay($request, $Api)
     {
-        parent::prepareToPay($orderId, $Api);
+        parent::prepareToPay($request, $Api);
 
         // we require these fields for references, but they aren't always required
         $this->buyer->setAddress($this->model['Address']);

@@ -37,11 +37,11 @@ abstract class PaymentCaptureAction extends PaymentAwareAction
 
     abstract function supports($request);
 
-    protected function prepareToPay($orderId, $Api)
+    protected function prepareToPay($request, $Api)
     {
-        $getOrder = \Order::model()->findByPk($orderId);
+        $model = $request->getModel();
 
-        $getOrderItems = $getOrder->orderItems();
+        $getOrderItems = $model['Items'];
 
         $this->model['Message'] = 'This is a payment of ' . $this->model['MerchantTransactionId'];
         $this->model['Subject'] = 'Payment of ' . $this->model['MerchantTransactionId'];
@@ -68,20 +68,13 @@ abstract class PaymentCaptureAction extends PaymentAwareAction
         $items = array();
         foreach ($getOrderItems as $item) {
 
-            /* You need pass the reference of the related DineroMailAction instance to the DineroMailItem instance,
-             * the Dine \CVarDumper::dump($items,10,true);
-            exit();roMailItem instance need the Gateway information stored in DineroMailAction instance,
-             * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
-             * */
-            $currentItem = null;
-
             // TODO: same question goes here, couldn't we just pass in the namespace instead?
             $currentItem = new Item($Api);
-            $currentItem->setCode($item->type . '-' . $item->id);
-            $currentItem->setName($item->name);
-            $currentItem->setDescription($item->name);
-
-            $currentItem->setAmount($item->amount);
+            $currentItem->setCode($item['Code']);
+            $currentItem->setName($item['Name']);
+            $currentItem->setDescription($item['Description']);
+            $currentItem->setAmount($item['Amount']);
+            $currentItem->setQuantity($item['Quantity']);
 
             if (isset($model['Items']['Currency'])) {
                 $currentItem->setCurrency($model['Items']['Currency']);
