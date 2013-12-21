@@ -35,6 +35,8 @@ class Api
 
     protected $_currency;
     protected $_provider;
+    protected $_testModeSettings = '';
+    protected $_sandboxMode;
 
     protected $_connection = null;
     protected $_client = null;
@@ -53,6 +55,11 @@ class Api
         } else{
             $this->setProvider(self::DINEROMAIL_DEFAULT_PROVIDER);
         }
+
+        if (!empty($config['test_mode_settings'])) {
+            $this->setTestModeSettings($config['test_mode_settings']);
+        }
+        $this->_sandboxMode = ($config['sandbox'] ? true : false);
 
         $credentials = new Credentials($config['username'],$config['password']);
 
@@ -101,6 +108,21 @@ class Api
     public function getProvider()
     {
         return $this->_provider;
+    }
+
+    public function setTestModeSettings($settings)
+    {
+        return $this->_testModeSettings = $settings;
+    }
+
+    public function getTestModeSettings()
+    {
+        return $this->_testModeSettings;
+    }
+
+    public function getSandboxMode()
+    {
+        return $this->_sandboxMode;
     }
 
     public function getClient()
