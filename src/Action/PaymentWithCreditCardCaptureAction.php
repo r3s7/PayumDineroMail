@@ -33,6 +33,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         $this->model = $getPayment->getPaymentDetails();
 
         if (
+            isset($this->model['CurrencyCode']) &&
             isset($this->model['MerchantTransactionId']) &&
             isset($this->model['Name']) &&
             isset($this->model['LastName']) &&
@@ -47,6 +48,10 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
             /* @var $Api Api */
             // get back our new DineroMailAction instance
             $Api = $getDineroMailConfig->getApi();
+
+            // set our currency code for our API
+            // this will be set on a per item basis later on
+            $Api->setCurrency($this->model['CurrencyCode']);
 
             $this->prepareToPay($getPayment->order_id, $Api);
 

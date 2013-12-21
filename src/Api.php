@@ -49,6 +49,8 @@ class Api
     )
     {
 
+        $this->setCurrency($defaultCurrency);
+
         if(!empty($config['provider'])){
 
             $this->setProvider($config['provider']);

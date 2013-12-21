@@ -85,6 +85,8 @@ abstract class PaymentCaptureAction extends PaymentAwareAction
 
             if (isset($model['Items']['Currency'])) {
                 $currentItem->setCurrency($model['Items']['Currency']);
+            } else {
+                $currentItem->setCurrency($Api->getCurrency());
             }
 
             $items[] = $currentItem;
