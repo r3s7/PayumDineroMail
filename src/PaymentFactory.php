@@ -41,7 +41,11 @@ abstract class PaymentFactory
         $payment->addExtension(new EndlessCycleDetectorExtension);
 
         // in the future, we'll work on figuring out from our config with type of actions we want to use here
+
+        if($api instanceof DoPaymentWithCreditCardApi)
         $payment->addAction(new PaymentWithCreditCardCaptureAction());
+
+        if($api instanceof DoPaymentWithReferenceApi)
         $payment->addAction(new PaymentWithCreditCardStatusAction());
 
         $payment->addAction(new ExecuteSameRequestWithModelDetailsAction);
