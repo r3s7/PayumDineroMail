@@ -2,6 +2,7 @@
 
 namespace Payum\DineroMail;
 
+use Payum\DineroMail\Api;
 use Payum\DineroMail\Api\Credentials;
 use Payum\DineroMail\Api\Gateway;
 use Payum\DineroMail\Api\Objects\Buyer;
@@ -59,12 +60,12 @@ class DoPaymentWithCreditCardApi extends Api{
      * @link https://api.dineromail.com/dmapi.asmx?WSDL
      *
      * @param array $items items to create the payment
-     * @param \Buyer|\DineroMailBuyer $buyer contains the buyer information
+     * @param \Buyer|\DineroMailBuyer|\Payum\DineroMail\Api\Objects\Buyer $buyer contains the buyer information
      * @param CreditCard $creditCard
      * @param string $transactionId an unique TX id
      * @param string $message the API says this is optional, although we aren't currently treating it that way in our code here
      * @param string $subject the API says this is optional, although we aren't currently treating it that way in our code here
-     * @return
+     * @return mixed
      */
     public function doPaymentWithCreditCard(array $items, Buyer $buyer, CreditCard $creditCard, $transactionId, $message, $subject)
     {

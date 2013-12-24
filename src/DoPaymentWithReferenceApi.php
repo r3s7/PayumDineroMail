@@ -2,6 +2,7 @@
 
 namespace Payum\DineroMail;
 
+use Payum\DineroMail\Api;
 use Payum\DineroMail\Api\Credentials;
 use Payum\DineroMail\Api\Gateway;
 use Payum\DineroMail\Api\Objects\Buyer;
