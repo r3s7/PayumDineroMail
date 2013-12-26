@@ -29,7 +29,6 @@ abstract class PaymentFactory
     public static function create( Api $api)
     {
 
-
         /* first, I need an instance of Payment */
         $payment = new Payment;
 

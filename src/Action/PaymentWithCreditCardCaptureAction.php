@@ -118,9 +118,14 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
     public function supports($request)
     {
-        return
-            $request instanceof \WDCustomSecuredCaptureRequest &&
-            $request->getModel() instanceof \ArrayAccess
-            ;
+        $paymentName = explode('-',$request->getModel()->activeRecord->paymentName);
+        $paymentMethod = $paymentName[0];
+
+        if($paymentMethod == 'DineroMailCreditCard'){
+            return true;
+
+        }else{
+            return false;
+        }
     }
 }
