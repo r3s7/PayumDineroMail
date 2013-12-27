@@ -21,6 +21,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 {
     protected $creditCard;
 
+
     public function execute($request)
     {
         /** @var $request CaptureRequest */
@@ -29,7 +30,9 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         }
 
         $model = $request->getModel();
+
         $getPayment = $request->getPayment();
+
         $this->model = $getPayment->getPaymentDetails();
 
         if (
@@ -38,6 +41,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
             isset($this->model['Name']) &&
             isset($this->model['LastName']) &&
             isset($this->model['Email']) &&
+            isset($this->model['PaymentProvider']) &&
             isset($this->model['Installment']) &&
             isset($this->model['Holder']) &&
             isset($this->model['DocumentNumber'])
@@ -53,7 +57,10 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
             // this will be set on a per item basis later on
             $Api->setCurrency($this->model['CurrencyCode']);
 
+            $Api->setProvider($this->model['PaymentProvider']);
+
             $this->prepareToPay($request, $Api);
+
 
             //set as 1 for COMPLETED status, 2 for PENDING status (other values cause DENIED status)
             if ($Api->getSandboxMode() && $Api->getTestModeSettings() != '') {
@@ -71,6 +78,8 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
                     $this->model['Subject']
                 );
 
+                \CVarDumper::dump($result,10,true);
+                die;
 
                 if ($result->Status == "PENDING") {
                     $model['status'] = 'PENDING';
@@ -114,6 +123,8 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         $this->creditCard->setExpirationDate($this->model['ExpirationDate']);
         $this->creditCard->setSecurityCode($this->model['SecurityCode']);
         $this->creditCard->setDocumentNumber($this->model['DocumentNumber']);
+
+
     }
 
     public function supports($request)

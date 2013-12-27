@@ -39,6 +39,7 @@ class CreditCard extends BaseObject
     protected $_expirationDate      = '';
     protected $_securityCode        = '';
     protected $_documentNumber      = '';
+    protected $_paymentProvider     = '';
 
     // optional fields per API docs (Dec 19, 2013)
     protected $_address             = '';
@@ -131,7 +132,6 @@ class CreditCard extends BaseObject
                 'ExpirationDate'        => $this->_expirationDate->get(), // gets and erases a sensitive value
                 'SecurityCode'          => $this->_securityCode->get(), // gets and erases a sensitive value
                 'DocumentNumber'        => $this->_documentNumber,
-
                 'Address'               => $this->_address,
                 'AddressNumber'         => $this->_addressNumber,
                 'AddressComplement'     => $this->_addressComplement,
@@ -154,7 +154,6 @@ class CreditCard extends BaseObject
             $this->_expirationDate->peek() . // gets and leaves a sensitive value
             $this->_securityCode->peek() . // gets and leaves a sensitive value
             $this->_documentNumber .
-
             $this->_address .
             $this->_addressNumber .
             $this->_addressComplement .

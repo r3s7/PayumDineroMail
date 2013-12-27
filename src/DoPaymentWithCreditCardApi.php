@@ -26,12 +26,7 @@ class DoPaymentWithCreditCardApi extends Api{
 
         $this->setCurrency($defaultCurrency);
 
-        if(!empty($config['provider'])){
-
-            $this->setProvider($config['provider']);
-        } else{
-            $this->setProvider(self::DINEROMAIL_DEFAULT_PROVIDER);
-        }
+        $this->setProvider(self::DINEROMAIL_DEFAULT_PROVIDER);
 
         if (!empty($config['test_mode_settings'])) {
             $this->setTestModeSettings($config['test_mode_settings']);
@@ -71,7 +66,8 @@ class DoPaymentWithCreditCardApi extends Api{
     {
         $messageId = $this->uniqueId();
 
-        $hash = $this->hash($transactionId,
+        $hash = $this->hash(
+            $transactionId,
             $messageId,
             $this->getItemsChain($items),
             $buyer,
@@ -79,7 +75,8 @@ class DoPaymentWithCreditCardApi extends Api{
             $this->getProvider(),
             $subject,
             $message,
-            $this->getConnection()->getCredentials()->getPassword());
+            $this->getConnection()->getCredentials()->getPassword()
+        );
 
 
         $request = array(
@@ -88,7 +85,7 @@ class DoPaymentWithCreditCardApi extends Api{
             'MerchantTransactionId'     => $transactionId,
             'Items'                     => $this->getSoapItems($items),
             'Buyer'                     => $buyer->asSoapObject(),
-            'Provider' => $this->getProvider(),
+            'Provider'                  => $this->getProvider(),
             'CreditCard'                => $creditCard->asSoapObject(),
             'Subject'                   => $subject,
             'Message'                   => $message,
