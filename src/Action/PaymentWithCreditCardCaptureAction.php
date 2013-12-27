@@ -20,6 +20,7 @@ use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 {
     protected $creditCard;
+    protected $possibleStatuses = array('PENDING','COMPLETED','DENIED','ERROR');
 
 
     public function execute($request)
@@ -78,33 +79,35 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
                     $this->model['Subject']
                 );
 
-                \CVarDumper::dump($result,10,true);
-                die;
+                $this->updatePaymentStatus($getPayment,$result);
 
-                if ($result->Status == "PENDING") {
-                    $model['status'] = 'PENDING';
-                }
-
-                if ($result->Status == "COMPLETED") {
-                    $model['status'] = 'COMPLETED';
-                }
-
-
-                if ($result->Status == "DENIED") {
-                    $model['status'] = 'DENIED';
-                }
-
-                if ($result->Status == "ERROR") {
-                    $model['status'] = 'ERROR';
-                }
+                $this->logPaymentTransaction($getPayment,$result,$getDineroMailConfig);
 
 
             } catch (DineroMailException $e) {
-                $model['status'] = 'ERROR';
+                $getPayment->status = 'ERROR';
+                $getPayment->save();
+
+                $variables = array(
+                    'ipAddress'          => Yii::app()->request->userHostAddress,
+                    'User'               => (isset(Yii::app()->user->id)) ? Yii::app()->user->id : null,
+                    'submissionId'       => (isset($getDineroMailConfig->submissionId)) ? $getDineroMailConfig->submissionId : null,
+                    'message'            => $e,
+                );
+                Yii::app()->applog->log("dineromail-unknown-error", null, $variables);
+
+                throw new \CHttpException(400, \Yii::t('app', 'unknow error'));
             }
 
 
         } else {
+
+            $variables = array(
+                'ipAddress'          => Yii::app()->request->userHostAddress,
+                'User'               => (isset(Yii::app()->user->id)) ? Yii::app()->user->id : null,
+            );
+            Yii::app()->applog->log("dineromail-bad-request", null, $variables);
+
             throw new \CHttpException(400, \Yii::t('app', 'bad request'));
         }
     }
@@ -126,6 +129,38 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
 
     }
+
+    protected function updatePaymentStatus($payment,$result)
+    {
+        if(!in_array($result->Status,$this->possibleStatuses))
+            throw new \CHttpException(400, \Yii::t('app', 'bad request'));
+
+        $payment->status = $result->Status ;
+        $payment->unique_message_id = $result->UniqueMessageId;
+        $payment->save();
+
+    }
+
+    protected function logPaymentTransaction($payment,$result,$paymentMethodConfig)
+    {
+
+        if(!in_array($result->Status,$this->possibleStatuses))
+            throw new \CHttpException(400, \Yii::t('app', 'bad request'));
+
+        $lowerCaseStatus = strtolower($result->Status);
+
+        $variables = array(
+            'ipAddress'             => Yii::app()->request->userHostAddress,
+            'User'                  => (isset(Yii::app()->user->id)) ? Yii::app()->user->id : null,
+            'submissionId'          => (isset($paymentMethodConfig->submissionId)) ? $paymentMethodConfig->submissionId : null,
+            'message'               => $result->Message,
+            'uniqueMessageId'       => $result->UniqueMessageId,
+            'merchantTransactionId' => $result->MerchantTransactionId,
+            'status'                => $result->Status
+        );
+        Yii::app()->applog->log("dineromail-{$lowerCaseStatus}", null, $variables);
+    }
+
 
     public function supports($request)
     {
