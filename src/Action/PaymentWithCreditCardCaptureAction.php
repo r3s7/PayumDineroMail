@@ -151,7 +151,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
         $variables = array(
             'ipAddress'             => \Yii::app()->request->userHostAddress,
-            'User'                  => (isset(\Yii::app()->user->id)) ? Yii::app()->user->id : null,
+            'User'                  => (isset(\Yii::app()->user->id)) ? \Yii::app()->user->id : null,
             'submissionId'          => (isset($paymentMethodConfig->submissionId)) ? $paymentMethodConfig->submissionId : null,
             'message'               => $result->Message,
             'uniqueMessageId'       => $result->UniqueMessageId,
