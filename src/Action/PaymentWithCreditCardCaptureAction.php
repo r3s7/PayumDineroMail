@@ -81,7 +81,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
                 $this->updatePaymentStatus($getPayment,$result);
 
-                $this->logPaymentTransaction($getPayment,$result,$getDineroMailConfig);
+                $this->logPaymentTransaction($result,$getDineroMailConfig);
 
 
             } catch (DineroMailException $e) {
@@ -89,12 +89,12 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
                 $getPayment->save();
 
                 $variables = array(
-                    'ipAddress'          => Yii::app()->request->userHostAddress,
-                    'User'               => (isset(Yii::app()->user->id)) ? Yii::app()->user->id : null,
+                    'ipAddress'          => \Yii::app()->request->userHostAddress,
+                    'User'               => (isset(\Yii::app()->user->id)) ? Yii::app()->user->id : null,
                     'submissionId'       => (isset($getDineroMailConfig->submissionId)) ? $getDineroMailConfig->submissionId : null,
                     'message'            => $e,
                 );
-                Yii::app()->applog->log("dineromail-unknown-error", null, $variables);
+                \Yii::app()->applog->log("dineromail-unknown-error", null, $variables);
 
                 throw new \CHttpException(400, \Yii::t('app', 'unknow error'));
             }
@@ -103,10 +103,10 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         } else {
 
             $variables = array(
-                'ipAddress'          => Yii::app()->request->userHostAddress,
-                'User'               => (isset(Yii::app()->user->id)) ? Yii::app()->user->id : null,
+                'ipAddress'          => \Yii::app()->request->userHostAddress,
+                'User'               => (isset(\Yii::app()->user->id)) ? Yii::app()->user->id : null,
             );
-            Yii::app()->applog->log("dineromail-bad-request", null, $variables);
+            \Yii::app()->applog->log("dineromail-bad-request", null, $variables);
 
             throw new \CHttpException(400, \Yii::t('app', 'bad request'));
         }
@@ -141,7 +141,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 
     }
 
-    protected function logPaymentTransaction($payment,$result,$paymentMethodConfig)
+    protected function logPaymentTransaction($result,$paymentMethodConfig)
     {
 
         if(!in_array($result->Status,$this->possibleStatuses))
@@ -150,15 +150,15 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         $lowerCaseStatus = strtolower($result->Status);
 
         $variables = array(
-            'ipAddress'             => Yii::app()->request->userHostAddress,
-            'User'                  => (isset(Yii::app()->user->id)) ? Yii::app()->user->id : null,
+            'ipAddress'             => \Yii::app()->request->userHostAddress,
+            'User'                  => (isset(\Yii::app()->user->id)) ? Yii::app()->user->id : null,
             'submissionId'          => (isset($paymentMethodConfig->submissionId)) ? $paymentMethodConfig->submissionId : null,
             'message'               => $result->Message,
             'uniqueMessageId'       => $result->UniqueMessageId,
             'merchantTransactionId' => $result->MerchantTransactionId,
             'status'                => $result->Status
         );
-        Yii::app()->applog->log("dineromail-{$lowerCaseStatus}", null, $variables);
+        \Yii::app()->applog->log("dineromail-{$lowerCaseStatus}", null, $variables);
     }
 
 
