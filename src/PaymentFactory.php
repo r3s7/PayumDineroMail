@@ -45,7 +45,7 @@ abstract class PaymentFactory
         $payment->addAction(new PaymentWithCreditCardCaptureAction());
 
         if($api instanceof DoPaymentWithReferenceApi)
-        $payment->addAction(new PaymentWithCreditCardStatusAction());
+        $payment->addAction(new PaymentWithReferenceCaptureAction());
 
         $payment->addAction(new ExecuteSameRequestWithModelDetailsAction);
 
