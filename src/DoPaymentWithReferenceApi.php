@@ -17,7 +17,7 @@ class DoPaymentWithReferenceApi extends Api{
 
 
     //Possible values: rapipago, pagofacil, bapro, cobroexpress
-    const DINEROMAIL_DEFAULT_PROVIDER = "pagofacil";
+    const DINEROMAIL_DEFAULT_PROVIDER = "servipag";
 
 
     public function __construct(

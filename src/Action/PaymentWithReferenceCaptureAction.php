@@ -59,6 +59,10 @@ class PaymentWithReferenceCaptureAction extends PaymentAwareAction
             //new DineroMailAction instance
             $Api = $getDineroMailConfig->getApi();
 
+            //set provider selected by the Buyer
+            if($model['PaymentProvider'] != null)
+                $Api->setProvider($model['PaymentProvider']);
+
             /* Capture Buyer information, all information are required */
 
             /* You need pass the reference of the related DineroMailAction instance to the DineroMailBuyer instance,
