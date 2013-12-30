@@ -20,6 +20,8 @@ use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
 {
     protected $creditCard;
+    protected $possibleStatuses = array('PENDING','COMPLETED','DENIED','ERROR');
+
 
     public function execute($request)
     {
@@ -29,7 +31,9 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         }
 
         $model = $request->getModel();
+
         $getPayment = $request->getPayment();
+
         $this->model = $getPayment->getPaymentDetails();
 
         if (
@@ -38,6 +42,7 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
             isset($this->model['Name']) &&
             isset($this->model['LastName']) &&
             isset($this->model['Email']) &&
+            isset($this->model['PaymentProvider']) &&
             isset($this->model['Installment']) &&
             isset($this->model['Holder']) &&
             isset($this->model['DocumentNumber'])
@@ -53,7 +58,10 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
             // this will be set on a per item basis later on
             $Api->setCurrency($this->model['CurrencyCode']);
 
+            $Api->setProvider($this->model['PaymentProvider']);
+
             $this->prepareToPay($request, $Api);
+
 
             //set as 1 for COMPLETED status, 2 for PENDING status (other values cause DENIED status)
             if ($Api->getSandboxMode() && $Api->getTestModeSettings() != '') {
@@ -71,31 +79,35 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
                     $this->model['Subject']
                 );
 
+                $this->updatePaymentStatus($getPayment,$result);
 
-                if ($result->Status == "PENDING") {
-                    $model['status'] = 'PENDING';
-                }
-
-                if ($result->Status == "COMPLETED") {
-                    $model['status'] = 'COMPLETED';
-                }
-
-
-                if ($result->Status == "DENIED") {
-                    $model['status'] = 'DENIED';
-                }
-
-                if ($result->Status == "ERROR") {
-                    $model['status'] = 'ERROR';
-                }
+                $this->logPaymentTransaction($result,$getDineroMailConfig);
 
 
             } catch (DineroMailException $e) {
-                $model['status'] = 'ERROR';
+                $getPayment->status = 'ERROR';
+                $getPayment->save();
+
+                $variables = array(
+                    'ipAddress'          => \Yii::app()->request->userHostAddress,
+                    'User'               => (isset(\Yii::app()->user->id)) ? Yii::app()->user->id : null,
+                    'submissionId'       => (isset($getDineroMailConfig->submissionId)) ? $getDineroMailConfig->submissionId : null,
+                    'message'            => $e,
+                );
+                \Yii::app()->applog->log("dineromail-unknown-error", null, $variables);
+
+                throw new \CHttpException(400, \Yii::t('app', 'unknow error'));
             }
 
 
         } else {
+
+            $variables = array(
+                'ipAddress'          => \Yii::app()->request->userHostAddress,
+                'User'               => (isset(\Yii::app()->user->id)) ? Yii::app()->user->id : null,
+            );
+            \Yii::app()->applog->log("dineromail-bad-request", null, $variables);
+
             throw new \CHttpException(400, \Yii::t('app', 'bad request'));
         }
     }
@@ -114,13 +126,52 @@ class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction
         $this->creditCard->setExpirationDate($this->model['ExpirationDate']);
         $this->creditCard->setSecurityCode($this->model['SecurityCode']);
         $this->creditCard->setDocumentNumber($this->model['DocumentNumber']);
+
+
     }
+
+    protected function updatePaymentStatus($payment,$result)
+    {
+        if(!in_array($result->Status,$this->possibleStatuses))
+            throw new \CHttpException(400, \Yii::t('app', 'bad request'));
+
+        $payment->status = $result->Status ;
+        $payment->unique_message_id = $result->UniqueMessageId;
+        $payment->save();
+
+    }
+
+    protected function logPaymentTransaction($result,$paymentMethodConfig)
+    {
+
+        if(!in_array($result->Status,$this->possibleStatuses))
+            throw new \CHttpException(400, \Yii::t('app', 'bad request'));
+
+        $lowerCaseStatus = strtolower($result->Status);
+
+        $variables = array(
+            'ipAddress'             => \Yii::app()->request->userHostAddress,
+            'User'                  => (isset(\Yii::app()->user->id)) ? \Yii::app()->user->id : null,
+            'submissionId'          => (isset($paymentMethodConfig->submissionId)) ? $paymentMethodConfig->submissionId : null,
+            'message'               => $result->Message,
+            'uniqueMessageId'       => $result->UniqueMessageId,
+            'merchantTransactionId' => $result->MerchantTransactionId,
+            'status'                => $result->Status
+        );
+        \Yii::app()->applog->log("dineromail-{$lowerCaseStatus}", null, $variables);
+    }
+
 
     public function supports($request)
     {
-        return
-            $request instanceof \WDCustomSecuredCaptureRequest &&
-            $request->getModel() instanceof \ArrayAccess
-            ;
+        $paymentName = explode('-',$request->getModel()->activeRecord->paymentName);
+        $paymentMethod = $paymentName[0];
+
+        if($paymentMethod == 'DineroMailCreditCard'){
+            return true;
+
+        }else{
+            return false;
+        }
     }
 }

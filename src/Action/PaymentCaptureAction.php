@@ -39,8 +39,9 @@ abstract class PaymentCaptureAction extends PaymentAwareAction
 
     protected function prepareToPay($request, $Api)
     {
-        $model = $request->getModel();
 
+        $getPayment = $request->getPayment();
+        $model = $getPayment->getPaymentDetails();
         $getOrderItems = $model['Items'];
 
         $this->model['Message'] = 'This is a payment of ' . $this->model['MerchantTransactionId'];

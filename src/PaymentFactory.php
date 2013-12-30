@@ -29,7 +29,6 @@ abstract class PaymentFactory
     public static function create( Api $api)
     {
 
-
         /* first, I need an instance of Payment */
         $payment = new Payment;
 
@@ -41,8 +40,12 @@ abstract class PaymentFactory
         $payment->addExtension(new EndlessCycleDetectorExtension);
 
         // in the future, we'll work on figuring out from our config with type of actions we want to use here
+
+        if($api instanceof DoPaymentWithCreditCardApi)
         $payment->addAction(new PaymentWithCreditCardCaptureAction());
-        $payment->addAction(new PaymentWithCreditCardStatusAction());
+
+        if($api instanceof DoPaymentWithReferenceApi)
+        $payment->addAction(new PaymentWithReferenceCaptureAction());
 
         $payment->addAction(new ExecuteSameRequestWithModelDetailsAction);
 
