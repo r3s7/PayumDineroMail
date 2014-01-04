@@ -6,13 +6,20 @@
  * */
 namespace Payum\DineroMail\Action;
 
-use Payum\DineroMail\Api\DineroMailException;
-use Payum\DineroMail\Api\Objects\Buyer;
-use Payum\DineroMail\Api\Objects\Item;
+//Payum core namespaces
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\Request\CaptureRequest;
 use Payum\Core\Model\ArrayObject;
+
+//Payum Yii extension namespaces
 use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
+
+//Internal namespaces
+use Payum\DineroMail\Request\Api\DineroMailException;
+use Payum\DineroMail\Request\Api\Objects\Buyer;
+use Payum\DineroMail\Request\Api\Objects\Item;
+
+
 
 abstract class PaymentCaptureAction extends PaymentAwareAction
 {

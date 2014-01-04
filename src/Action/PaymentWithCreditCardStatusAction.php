@@ -1,6 +1,7 @@
 <?php
 namespace Payum\DineroMail\Action;
 
+//Payum core namespaces
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\StatusRequestInterface;
 use Payum\Core\Request\BinaryMaskStatusRequest;

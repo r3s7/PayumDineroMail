@@ -11,15 +11,15 @@ use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\Request\CaptureRequest;
 use Payum\Core\Model\ArrayObject;
 
-//Payum Yii extension namespaces
+// Payum Yii extension namespaces
 use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
 //Internal namespaces
-use Payum\DineroMail\Api\DineroMailException;
-use Payum\DineroMail\Api\Objects\Buyer;
-use Payum\DineroMail\Api\Objects\Item;
+use Payum\DineroMail\Request\Get\DineroMailException;
+use Payum\DineroMail\Request\Get\Objects\Buyer;
+use Payum\DineroMail\Request\Get\Objects\Item;
 
-class PaymentWithReferenceCaptureAction extends PaymentAwareAction
+class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
 {
 
 
@@ -200,7 +200,7 @@ class PaymentWithReferenceCaptureAction extends PaymentAwareAction
         $paymentName = explode('-',$request->getModel()->activeRecord->paymentName);
         $paymentMethod = $paymentName[0];
 
-        if($paymentMethod == 'DineroMail'){
+        if($paymentMethod == 'DineroMailPB'){
             return true;
 
         }else{

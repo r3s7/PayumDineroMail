@@ -1,10 +1,10 @@
 <?php
 
-namespace Payum\DineroMail\Api\Objects;
+namespace Payum\DineroMail\Request\Api\Objects;
 
-use Payum\DineroMail\Api\Gateway;
-use Payum\DineroMail\Api;
-abstract class BaseObject
+use Payum\DineroMail\Request\Api\Gateway;
+use Payum\DineroMail\Request\Api;
+abstract class SoapObject
 {
     protected $_gateway = null;
 

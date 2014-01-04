@@ -1,6 +1,6 @@
 <?php
 
-namespace Payum\DineroMail\Api;
+namespace Payum\DineroMail\Request\Api;
 
 class DineroMailException extends \Exception
 {

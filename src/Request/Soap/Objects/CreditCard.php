@@ -6,11 +6,11 @@
  * @see Vendor_DineroMail_Object_Object
  */
 
-namespace Payum\DineroMail\Api\Objects;
+namespace Payum\DineroMail\Request\Api\Objects;
 
 use Payum\Core\Security\SensitiveValue;
 
-class CreditCard extends BaseObject
+class CreditCard extends SoapObject
 {
 
     /*

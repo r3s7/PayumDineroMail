@@ -1,16 +1,21 @@
 <?php
 namespace Payum\DineroMail;
 
+//Payum core namespaces
 use Payum\Core\Action\ExecuteSameRequestWithModelDetailsAction;
 use Payum\Core\Extension\EndlessCycleDetectorExtension;
+use Payum\Core\Payment;
+use Payum\Core\Request\CaptureRequest;
+use Payum\Core\Request\BinaryMaskStatusRequest;
 
+//Internal namespaces
 use Payum\DineroMail\Action\PaymentWithCreditCardCaptureAction;
 use Payum\DineroMail\Action\PaymentWithCreditCardStatusAction;
 use Payum\DineroMail\Action\PaymentWithReferenceCaptureAction;
 use Payum\DineroMail\Action\PaymentWithReferenceStatusAction;
-use Payum\Core\Payment;
-use Payum\Core\Request\CaptureRequest;
-use Payum\Core\Request\BinaryMaskStatusRequest;
+use Payum\DineroMail\Action\PaymentWithPayButtonCaptureAction;
+use Payum\DineroMail\Action\PaymentWithPayButtonStatusAction;
+
 
 
 abstract class PaymentFactory
@@ -41,11 +46,15 @@ abstract class PaymentFactory
 
         // in the future, we'll work on figuring out from our config with type of actions we want to use here
 
+
+        if($api instanceof DoPaymentWithPayButtonApi)
+            $payment->addAction(new PaymentWithPayButtonCaptureAction());
+
         if($api instanceof DoPaymentWithCreditCardApi)
-        $payment->addAction(new PaymentWithCreditCardCaptureAction());
+            $payment->addAction(new PaymentWithCreditCardCaptureAction());
 
         if($api instanceof DoPaymentWithReferenceApi)
-        $payment->addAction(new PaymentWithReferenceCaptureAction());
+            $payment->addAction(new PaymentWithReferenceCaptureAction());
 
         $payment->addAction(new ExecuteSameRequestWithModelDetailsAction);
 
