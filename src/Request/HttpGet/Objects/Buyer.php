@@ -3,7 +3,7 @@
 /**
  * Represents a Buyer object containing all the information related
  * to the buyer which is going to do the purchase
- * @see the @manual integration_en.pdf page 14 to 16
+ * @see the @manual integration_en.pdf at "basic integration"
  * @manual https://cl.dineromail.com/content/integracion.zip
  */
 

@@ -2,8 +2,9 @@
 
 /**
  * Represents a Item object containing all the information related
- * to the item to be purchased.
- * @see Vendor_DineroMail_Object_Object
+ * to the Items of the transaction
+ * @see the @manual integration_en.pdf at "basic integration"
+ * @manual https://cl.dineromail.com/content/integracion.zip
  */
 
 namespace Payum\DineroMail\Request\HttpGet\Objects;
