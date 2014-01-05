@@ -15,9 +15,9 @@ use Payum\Core\Model\ArrayObject;
 use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
 //Internal namespaces
-use Payum\DineroMail\Api\DineroMailException;
-use Payum\DineroMail\Api\Objects\Buyer;
-use Payum\DineroMail\Api\Objects\Item;
+use Payum\DineroMail\Request\Common\DineroMailException;
+use Payum\DineroMail\Request\Soap\Objects\Buyer;
+use Payum\DineroMail\Request\Soap\Objects\Item;
 
 class PaymentWithReferenceCaptureAction extends PaymentAwareAction
 {

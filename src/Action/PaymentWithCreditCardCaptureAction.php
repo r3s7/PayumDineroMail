@@ -15,12 +15,12 @@ use Payum\Core\Model\ArrayObject;
 use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
 //Internal namespaces
-use Payum\DineroMail\Action\PaymentCaptureAction;
-use Payum\DineroMail\Request\Api\DineroMailException;
 use Payum\DineroMail\Request\Api;
-use Payum\DineroMail\Request\Api\Objects\Buyer;
-use Payum\DineroMail\Request\Api\Objects\CreditCard;
-use Payum\DineroMail\Request\Api\Objects\Item;
+use Payum\DineroMail\Action\PaymentCaptureAction;
+use Payum\DineroMail\Request\Common\DineroMailException;
+use Payum\DineroMail\Request\Soap\Objects\Buyer;
+use Payum\DineroMail\Request\Soap\Objects\CreditCard;
+use Payum\DineroMail\Request\Soap\Objects\Item;
 
 
 class PaymentWithCreditCardCaptureAction extends PaymentCaptureAction

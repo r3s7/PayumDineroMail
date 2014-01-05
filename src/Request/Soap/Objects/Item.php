@@ -6,7 +6,7 @@
  * @see Vendor_DineroMail_Object_Object
  */
 
-namespace Payum\DineroMail\Request\Api\Objects;
+namespace Payum\DineroMail\Request\Soap\Objects;
 
 use Payum\DineroMail\Request\Api;
 

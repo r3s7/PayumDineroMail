@@ -29,6 +29,7 @@ abstract class Api
     const DINEROMAIL_WDSL_GATEWAY = "https://api.dineromail.com/dmapi.asmx?WSDL";
 
 
+
     protected $_currency;
     protected $_provider;
 
