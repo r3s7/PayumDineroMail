@@ -39,7 +39,6 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
             array_key_exists('DocumentType', $model) &&
             array_key_exists('Name', $model) &&
             array_key_exists('LastName', $model) &&
-            array_key_exists('CountryId', $model) &&
             array_key_exists('Email', $model) &&
             array_key_exists('Phone', $model) &&
             array_key_exists('Sex', $model)
