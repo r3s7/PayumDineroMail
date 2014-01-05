@@ -83,12 +83,16 @@ class CheckOutUrl
      * &payment_method_available=all&item_name_1=Example+DVD&item_quantity_1=1&item_ammount_1=12050
      * &item_name_2=Example2+DVD&item_quantity_1=3&item_ammount_2=14050
      */
-    public function __toString(){
+    public function __toString()
+    {
         return $this->_checkOutUrl .
         $this->_merchant .
         "&country_id=" . $this->_countryId .
         "&payment_method_available=" . $this->_paymentMethodAvailable .
-        $this->concatenateItems($this->_items);
+        $this->concatenateItems($this->_items) .
+        "&ok_url=" . $this->_okUrl .
+        "&error_url=" . $this->_errorUrl .
+        "&pending_url=" . $this->_pendingUrl;
     }
 
 }

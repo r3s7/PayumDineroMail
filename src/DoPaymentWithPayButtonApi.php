@@ -23,6 +23,15 @@ class DoPaymentWithPayButtonApi extends Api
         $this->_merchant = new Merchant($config['merchantId']);
     }
 
+    public function setMerchant(Merchant $merchant){
+
+        $this->_merchant = $merchant;
+    }
+
+    public function getMerchant(){
+
+        return $this->_merchant;
+    }
     /**
      * encapsulates the call to the DineroMail web service invoking the method
      * doPaymentWithReference
