@@ -8,7 +8,7 @@
 
 namespace Payum\DineroMail\Request\Soap\Objects;
 
-use Payum\DineroMail\Request\Api;
+use Payum\DineroMail\Api;
 
 class Item extends SoapObject
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Payum\DineroMail\Request\Api;
+namespace Payum\DineroMail\Request\Soap;
 
 /**
  * Contains the credentials required by Vendor_DineroMail_Connection
