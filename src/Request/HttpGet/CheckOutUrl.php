@@ -89,11 +89,12 @@ class CheckOutUrl
         $string .= "&country_id={$this->_countryId}";
         $string .= "&payment_method_available={$this->_paymentMethodAvailable}";
         $string .= $this->concatenateItems($this->_items);
+        //@TODO we need figure out how we can get the status notification, (Dineromail sucks)
         //$string .= "&ok_url={$this->_okUrl}";
         //$string .= "&error_url={$this->_errorUrl}";
         //$string .= "&pending_url={$this->_pendingUrl}";
         $string .= "&currency=clp";
-        echo $string; \Yii::app()->end();
+
 
         return $string;
 
