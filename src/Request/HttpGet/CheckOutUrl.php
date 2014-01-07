@@ -42,18 +42,19 @@ class CheckOutUrl
         $okUrl,
         $errorUrl,
         $pendingUrl,
-        $countryId = 'chl',
-        $paymentMethodAvailable = 'all'
-    ) {
+        $countryId,
+        $paymentMethodAvailable
+    )
+    {
 
-        $this->_buyer                  = $buyer;
-        $this->_items                  = $items;
-        $this->_merchant               = $merchant;
-        $this->_checkOutUrl            = $checkOutUrl;
-        $this->_okUrl                  = urlencode($okUrl);
-        $this->_errorUrl               = urlencode($errorUrl);
-        $this->_pendingUrl             = urlencode($pendingUrl);
-        $this->_countryId              = $countryId;
+        $this->_buyer = $buyer;
+        $this->_items = $items;
+        $this->_merchant = $merchant;
+        $this->_checkOutUrl = $checkOutUrl;
+        $this->_okUrl = urlencode($okUrl);
+        $this->_errorUrl = urlencode($errorUrl);
+        $this->_pendingUrl = urlencode($pendingUrl);
+        $this->_countryId = $countryId;
         $this->_paymentMethodAvailable = $paymentMethodAvailable;
     }
 
@@ -63,16 +64,11 @@ class CheckOutUrl
         $string = '';
         foreach ($items as $item) {
 
-            //with "&" at the end
-            if ($item != end($items)) {
-                $string .= $item . "&";
-            }
-
-            //without "&" at the end (only applies for the last position)
-            if ($item == end($items)) {
-                $string .= $item;
-            }
+          $string .= $item;
         }
+
+        return $string;
+
     }
 
     /**
@@ -85,14 +81,22 @@ class CheckOutUrl
      */
     public function __toString()
     {
-        return $this->_checkOutUrl .
-        $this->_merchant .
-        "&country_id=" . $this->_countryId .
-        "&payment_method_available=" . $this->_paymentMethodAvailable .
-        $this->concatenateItems($this->_items) .
-        "&ok_url=" . $this->_okUrl .
-        "&error_url=" . $this->_errorUrl .
-        "&pending_url=" . $this->_pendingUrl;
+
+
+        $string = '';
+        $string .= $this->_checkOutUrl;
+        $string .= $this->_merchant;
+        $string .= "&country_id={$this->_countryId}";
+        $string .= "&payment_method_available={$this->_paymentMethodAvailable}";
+        $string .= $this->concatenateItems($this->_items);
+        //$string .= "&ok_url={$this->_okUrl}";
+        //$string .= "&error_url={$this->_errorUrl}";
+        //$string .= "&pending_url={$this->_pendingUrl}";
+        $string .= "&currency=clp";
+        echo $string; \Yii::app()->end();
+
+        return $string;
+
     }
 
 }

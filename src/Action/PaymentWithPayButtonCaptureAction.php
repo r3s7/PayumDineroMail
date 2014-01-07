@@ -26,6 +26,7 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
     public function execute($request)
     {
 
+
         $getPayumPaymentDetails = PaymentDetailsActiveRecordWrapper::findModelById(
             'payum_payment',
             $request->getModel()->getDetails()->getId()
@@ -49,7 +50,7 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
 
             $getPayment = \Payment::model()->findByPk($unSuglify[0]);
 
-            $getDineroMailConfig = \DineroMailConfigPayButton::model()->findByPk($getPayment->payment_method_id);
+            $getDineroMailConfig = \DineroMailPayButtonConfig::model()->findByPk($getPayment->payment_method_id);
 
             $getOrder = \Order::model()->findByPk($getPayment->order_id);
 
@@ -57,6 +58,12 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
 
             //get Api
             $Api = $getDineroMailConfig->getApi();
+
+            if ($Api->getSandboxMode() && $Api->getTestModeSettings() != '') {
+                //@TODO we need Merchant in 1721561 and country_id = 1 (note that 1=ar  2=br 3=cl 4=mx)
+                $Api->setMerchant = new Merchant($Api->getTestModeSettings());
+                $Api->setCountryId = '1';
+            }
 
             /* Capture Buyer information, all information are required */
 
@@ -93,6 +100,7 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
 
             try {
                 //this method redirects to the DineroMail checkOut page
+                //\CVarDumper::dump($items,10,true); \Yii::app()->end();
                 $Api->doPaymentWithPayButton(
                     $buyer,
                     $items,
@@ -122,10 +130,10 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
     public function supports($request)
     {
 
-        $paymentName   = explode('-', $request->getModel()->activeRecord->paymentName);
+        $paymentName   = explode('-', $request->getModel()->activeRecord->_payment_name);
         $paymentMethod = $paymentName[0];
 
-        if ($paymentMethod == 'DineroMailPB') {
+        if ($paymentMethod == 'DineroMailPayButton') {
             return true;
 
         } else {

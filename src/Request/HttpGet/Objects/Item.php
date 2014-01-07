@@ -43,7 +43,7 @@ class Item
      */
     public function setAmount($ammount)
     {
-        $this->_ammount = str_replace('.', '', $ammount);
+        $this->_ammount = $ammount;
     }
 
     public function setName($name)
@@ -74,9 +74,13 @@ class Item
     public function __toString()
     {
 
-        return "item_ammount_{$this->_itemNumber}={$this->_amount}
-        &item_name_{$this->_itemNumber}={$this->_name}
-        &item_quantity_{$this->_itemNumber}={$this->_quantity}";
+        $string = '';
+        $string .= "&item_ammount_{$this->_itemNumber}={$this->_ammount}";
+        $string .= "&item_name_{$this->_itemNumber}={$this->_name}";
+        $string .= "&item_quantity_{$this->_itemNumber}={$this->_quantity}";
+        $string .= "&item_currency_{$this->_itemNumber}=clp";
+
+        return $string;
     }
 
 }

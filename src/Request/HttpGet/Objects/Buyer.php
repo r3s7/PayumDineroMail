@@ -97,19 +97,36 @@ class Buyer
      * @return String
      *
      * something like this:
-     * buyer_document_number=12345678&buyer_document_type=dni&buyer_email=john%40doe.com&buyer_lastname=Doe
+     * &buyer_document_number=12345678&buyer_document_type=dni&buyer_email=john%40doe.com&buyer_lastname=Doe
      * &buyer_name=John&buyer_phone=55543256&buyer_sex=m
      */
     public function __toString()
     {
 
-        return "buyer_document_number={$this->_documentNumber}
-        &buyer_document_type={$this->_documentType}
-        &buyer_email={$this->_email}
-        &buyer_lastname={$this->_lastName}
-        &buyer_name={$this->_name}
-        &buyer_phone={$this->_phone}
-        &buyer_sex={$this->_sex}";
+        $string = '';
+
+        if(!empty($this->_documentNumber))
+            $string .= "&buyer_document_number=".$this->_documentNumber;
+
+        if(!empty($this->_documentType))
+            $string .= "&buyer_document_type=".$this->_documentType;
+
+        if(!empty($this->_email))
+            $string .= "&buyer_email=".$this->_email;
+
+        if(!empty($this->_lastName))
+            $string .= "&buyer_lastname=".$this->_lastName;
+
+        if(!empty($this->_name))
+            $string .= "&buyer_name=".$this->_name;
+
+        if(!empty($this->_phone))
+            $string .= "&buyer_phone=".$this->_phone;
+
+        if(!empty($this->_sex))
+            $string .= "&buyer_sex=".$this->_sex;
+
+        return trim($string);
     }
 
 }
