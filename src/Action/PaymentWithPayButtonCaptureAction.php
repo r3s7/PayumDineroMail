@@ -34,6 +34,7 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
 
         $model = unserialize($getPayumPaymentDetails->activeRecord->attributes['_details']);
 
+        // @TODO check why DocumentNumber, DocumentType, Phone, and Sex are in blank
         if (
             array_key_exists('MerchantTransactionId', $model) &&
             array_key_exists('DocumentNumber', $model) &&
