@@ -77,7 +77,9 @@ class DoPaymentWithPayButtonApi extends Api
         $pendingUrl
     ) {
 
-        //@TODO we should use $hash in the future with the Dineromail Advanced Integration.
+        /* @TODO we should use $hash in the future with the Dineromail Advanced Integration, @see the manual
+         * https://cl.dineromail.com/content/integracion.zip
+         */
 
         // we need Yii here
         \Yii::app()->request->redirect(
