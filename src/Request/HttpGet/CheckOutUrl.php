@@ -78,7 +78,7 @@ class CheckOutUrl
         //$string .= "&hash={$this->_hash}";
         //@TODO we need figure out how we can get the status notification, IPN maybe (Dineromail sucks)
 
-echo $string; exit();
+
         return $string;
 
     }

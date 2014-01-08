@@ -64,8 +64,6 @@ class DoPaymentWithPayButtonApi extends Api
         $string .= "&transaction_id =" . $merchantTransactionId;
         $string .= $this->_merchant->getPassword();
 
-        echo $string;
-
         return md5($string);
     }
 
