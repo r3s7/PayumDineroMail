@@ -13,7 +13,7 @@ class Buyer
 {
 
     protected $_documentNumber = '';
-    protected $_documentType ='';
+    protected $_documentType = '';
     protected $_email = '';
     protected $_lastName = '';
     protected $_name = '';
@@ -106,25 +106,25 @@ class Buyer
         $string = '';
 
 
-            $string .= "buyer_document_number=".$this->_documentNumber;
+        $string .= "buyer_document_number=" . $this->_documentNumber;
 
 
-            $string .= "&buyer_document_type=".$this->_documentType;
+        $string .= "&buyer_document_type=" . $this->_documentType;
 
 
-            $string .= "&buyer_email=".$this->_email;
+        $string .= "&buyer_email=" . $this->_email;
 
 
-            $string .= "&buyer_lastname=".$this->_lastName;
+        $string .= "&buyer_lastname=" . $this->_lastName;
 
 
-            $string .= "&buyer_name=".$this->_name;
+        $string .= "&buyer_name=" . $this->_name;
 
 
-            $string .= "&buyer_phone=".$this->_phone;
+        $string .= "&buyer_phone=" . $this->_phone;
 
 
-            $string .= "&buyer_sex=".$this->_sex;
+        $string .= "&buyer_sex=" . $this->_sex;
 
         return trim($string);
     }
