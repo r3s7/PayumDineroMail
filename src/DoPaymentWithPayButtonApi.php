@@ -59,10 +59,12 @@ class DoPaymentWithPayButtonApi extends Api
         $string = '';
         $string .= (string) $buyer;
         $string .= Item::concatenateItems($items);
-        $string .= "&merchant=" . $this->_merchant->getMerchantId();
+        $string .= $this->_merchant;
         $string .= "&payment_method_available=" . $this->_paymentMethodAvailable;
         $string .= "&transaction_id =" . $merchantTransactionId;
         $string .= $this->_merchant->getPassword();
+
+        echo $string;
 
         return md5($string);
     }
