@@ -49,7 +49,7 @@ class Merchant
      */
     public function __toString()
     {
-        return "&merchant={$this->_merchantId}";
+        return "merchant={$this->_merchantId}";
 
     }
 
