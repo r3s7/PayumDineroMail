@@ -93,6 +93,8 @@ class CheckOutUrl
         $string .= "&ok_url={$this->_okUrl}";
         $string .= "&pending_url={$this->_pendingUrl}";
         $string .= "&error_url={$this->_errorUrl}";
+        $string .= "&url_redirect_enabled=1";
+        $string .= "&buyer_message=1";
 
         //$string .= "&hash={$this->_hash}";
 
