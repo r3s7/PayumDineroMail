@@ -12,23 +12,23 @@ namespace Payum\DineroMail\Request\HttpGet\Objects;
 class Merchant
 {
 
-    protected $_merchantId = '';
-    protected $_merchantEmail = '';
+    protected $_merchantId    = '';
+    protected $_password      = '';
 
-    public function __construct($id, $email = '')
+    public function __construct($id, $password)
     {
-        $this->_merchantId    = (int)$id;
-        $this->_merchantEmail = urlencode((string)$email);
+        $this->_merchantId    = (string)$id;
+        $this->_password      = (string)$password;
     }
 
     public function setMerchantId($id)
     {
-        $this->_merchantId = (int)$id;
+        $this->_merchantId = (string)$id;
     }
 
-    public function setMerchantEmail($email)
+    public function setPassword($password)
     {
-        $this->_merchantEmail = urlencode((string)$email);
+        $this->_password = (string)$password;
     }
 
     public function getMerchantId()
@@ -36,9 +36,9 @@ class Merchant
         return $this->_merchantId;
     }
 
-    public function getMerchantEmail()
+    public function getPassword()
     {
-        return urldecode($this->_merchantEmail);
+        return $this->_password;
     }
 
     /**
@@ -49,14 +49,8 @@ class Merchant
      */
     public function __toString()
     {
-
-        if (!empty($this->_merchantId)) {
-        }
         return "merchant={$this->_merchantId}";
 
-        if (empty($this->_merchantId)) {
-            return "merchant={$this->_merchantEmail}";
-        }
     }
 
 }

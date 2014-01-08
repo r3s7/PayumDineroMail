@@ -19,6 +19,7 @@ class Item
     protected $_ammount = '';
     protected $_quantity = 1;
     protected $_name = '';
+    protected $currency = '';
 
     /**
      * Please note that DineroMail require suffixes for the item positions
@@ -43,7 +44,7 @@ class Item
      */
     public function setAmount($ammount)
     {
-        $this->_ammount = $ammount;
+        $this->_ammount = (string) $ammount;
     }
 
     public function setName($name)
@@ -51,10 +52,16 @@ class Item
         $this->_name = urlencode($name);
     }
 
-    public function setQuantity()
+    public function setQuantity($quantity)
     {
-        return $this->_quantity;
+        $this->_quantity = (string) $quantity;
     }
+
+    public function setCurrency($currency)
+    {
+        $this->_currency = (string) $currency;
+    }
+
 
     public function getAmount()
     {
@@ -66,9 +73,22 @@ class Item
         return $this->_name;
     }
 
-    public function getQuantity($quantity)
+    public function getQuantity()
     {
-        $this->_quantity = $quantity;
+        return $this->_quantity;
+    }
+
+    public static function concatenateItems(Array $items)
+    {
+
+        $string = '';
+        foreach ($items as $item) {
+
+            $string .= $item;
+        }
+
+        return $string;
+
     }
 
     public function __toString()
@@ -78,7 +98,7 @@ class Item
         $string .= "&item_ammount_{$this->_itemNumber}={$this->_ammount}";
         $string .= "&item_name_{$this->_itemNumber}={$this->_name}";
         $string .= "&item_quantity_{$this->_itemNumber}={$this->_quantity}";
-        $string .= "&item_currency_{$this->_itemNumber}=clp";
+        $string .= "&item_currency_{$this->_itemNumber}={$this->_currency}";
 
         return $string;
     }

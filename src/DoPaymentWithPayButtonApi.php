@@ -22,9 +22,9 @@ class DoPaymentWithPayButtonApi extends Api
     public function __construct($config)
     {
 
-        $this->_merchant = new Merchant($config['merchantId']);
+        $this->_merchant = new Merchant($config['merchantId'],$config['password']);
         $this->_countryId = self::DINEROMAIL_DEFAULT_COUNTRY_ID;
-        $this->_paymentMethodAvailable = '1';
+        $this->_paymentMethodAvailable = self::DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE;
 
     }
 
@@ -50,6 +50,23 @@ class DoPaymentWithPayButtonApi extends Api
         return $this->_merchant;
     }
 
+    protected function hash(
+        Buyer $buyer,
+        Array $items,
+        $merchantTransactionId
+    ){
+
+        $string = '';
+        $string .= (string) $buyer;
+        $string .= Item::concatenateItems($items);
+        $string .= "&merchant=" . $this->_merchant->getMerchantId();
+        $string .= "&payment_method_available=" . $this->_paymentMethodAvailable;
+        $string .= "&transaction_id =" . $merchantTransactionId;
+        $string .= $this->_merchant->getPassword();
+
+        return md5($string);
+    }
+
     /**
      * encapsulates the call to the DineroMail web service invoking the method
      * doPaymentWithReference
@@ -58,23 +75,17 @@ class DoPaymentWithPayButtonApi extends Api
      * @param \Payum\DineroMail\Request\HttpGet\Objects\Buyer contains the buyer information
      * @param array $items of \Payum\DineroMail\Request\HttpGet\Objects\Item to create the payment
      * @param \Payum\DineroMail\Request\HttpGet\Objects\Merchant $merchant
-     * @param $okUrl
-     * @param $errorUrl
-     * @param $pendingUrl
+     * @param $merchantTransactionId
      * @internal param string $countryId
      * @internal param string $paymentMethodAvailable
-     * @internal param string $transactionId an unique TX id
-     * @internal param $message
-     * @internal param $subject
      * @return mixed
      */
+
     public function doPaymentWithPayButton(
         Buyer $buyer,
         Array $items,
         $merchant,
-        $okUrl,
-        $errorUrl,
-        $pendingUrl
+        $merchantTransactionId
     ) {
 
         /* @TODO we should use $hash in the future with the Dineromail Advanced Integration, @see the manual
@@ -88,11 +99,10 @@ class DoPaymentWithPayButtonApi extends Api
                 $items,
                 $merchant,
                 self::DINEROMAIL_ROOT_CHECKOUT_URL,
-                $okUrl,
-                $errorUrl,
-                $pendingUrl,
                 $this->_countryId,
-                $this->_paymentMethodAvailable
+                $this->_paymentMethodAvailable,
+                $merchantTransactionId,
+                $this->hash($buyer,$items,$merchantTransactionId)
             )
         );
 

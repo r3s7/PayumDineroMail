@@ -60,11 +60,6 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
             //get Api
             $Api = $getDineroMailConfig->getApi();
 
-            if ($Api->getSandboxMode() && $Api->getTestModeSettings() != '') {
-                //@TODO we need Merchant in 1721561 and country_id = 1 (note that 1=ar  2=br 3=cl 4=mx)
-                $Api->setMerchant = new Merchant($Api->getTestModeSettings());
-                $Api->setCountryId = '1';
-            }
 
             /* Capture Buyer information, all information are required */
 
@@ -92,9 +87,10 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
                 $currentItem = null;
                 $currentItem = new Item();
                 $currentItem->setName($item->name);
-                //setQuantity is not needed
+                //setQuantity is not needed, 1 will be fine
+                $currentItem->setQuantity('1');
                 $currentItem->setAmount($item->amount);
-
+                $currentItem->setCurrency('clp');
                 $items[] = $currentItem;
             }
 
@@ -106,9 +102,7 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
                     $buyer,
                     $items,
                     $Api->getMerchant(),
-                    $request->getModel()->activeRecord->_after_url,
-                    $request->getModel()->activeRecord->_after_url,
-                    $request->getModel()->activeRecord->_after_url
+                    $model['MerchantTransactionId']
                 );
                 //@TODO in medium-term we need here CountryId and PaymentMethodAvailable
 

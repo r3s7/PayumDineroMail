@@ -106,7 +106,7 @@ class Buyer
         $string = '';
 
         if(!empty($this->_documentNumber))
-            $string .= "&buyer_document_number=".$this->_documentNumber;
+            $string .= "buyer_document_number=".$this->_documentNumber;
 
         if(!empty($this->_documentType))
             $string .= "&buyer_document_type=".$this->_documentType;
