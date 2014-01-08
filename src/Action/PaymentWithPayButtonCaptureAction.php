@@ -103,9 +103,9 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
                     $items,
                     $Api->getMerchant(),
                     $model['MerchantTransactionId'],
-                    $request->getModel()->activeRecord->_after_url . "&transaction_status=COMPLETED",
-                    $request->getModel()->activeRecord->_after_url . "&transaction_status=PENDING",
-                    $request->getModel()->activeRecord->_after_url . "&transaction_status=ERROR"
+                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=COMPLETED&dm_transaction_id={$model['MerchantTransactionId']}",
+                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=PENDING&dm_transaction_id={$model['MerchantTransactionId']}",
+                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=ERROR&dm_transaction_id={$model['MerchantTransactionId']}"
                 );
                 //@TODO in medium-term we need here CountryId and PaymentMethodAvailable
 
