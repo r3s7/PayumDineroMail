@@ -1,6 +1,6 @@
 <?php
 
-namespace Payum\DineroMail\Api;
+namespace Payum\DineroMail\Request\Soap;
 
 class Gateway
 {

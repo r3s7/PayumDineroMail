@@ -6,11 +6,11 @@
  * @see Vendor_DineroMail_Object_Object
  */
 
-namespace Payum\DineroMail\Api\Objects;
+namespace Payum\DineroMail\Request\Soap\Objects;
 
 use Payum\DineroMail\Api;
 
-class Item extends BaseObject
+class Item extends SoapObject
 {
 
     protected $_amount = '';

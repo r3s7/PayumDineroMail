@@ -5,7 +5,7 @@ namespace Payum\DineroMail\Action;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\StatusRequestInterface;
 
-class PaymentWithReferenceStatusAction implements ActionInterface
+class PaymentWithPayButtonStatusAction implements ActionInterface
 {
     public function execute($request)
     {

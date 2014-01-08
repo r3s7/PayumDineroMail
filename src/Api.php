@@ -1,14 +1,11 @@
 <?php
 namespace Payum\DineroMail;
 
-use Payum\DineroMail\Api\Credentials;
-use Payum\DineroMail\Api\Gateway;
-use Payum\DineroMail\Api\Objects\Buyer;
-use Payum\DineroMail\Api\Objects\CreditCard;
-use Payum\DineroMail\Api\ReferenceConnection;
-use Payum\DineroMail\Api\CreditCardConnection;
-use Payum\DineroMail\Api\Connection;
-use Payum\DineroMail\Api\DMSoapClient;
+use Payum\DineroMail\Request\Soap\Credentials;
+use Payum\DineroMail\Request\Soap\Gateway;
+use Payum\DineroMail\Request\Soap\Objects\Buyer;
+use Payum\DineroMail\Request\Soap\Objects\CreditCard;
+use Payum\DineroMail\Request\Soap\Connection;
 /**
  * Represents and contains all logic required to call the DineroMail
  * web service
@@ -27,6 +24,7 @@ abstract class Api
     const DINEROMAIL_WDSL_GATEWAY_SANDBOX = "https://sandboxapi.dineromail.com/dmapi.asmx?WSDL";
     const DINEROMAIL_NS_GATEWAY = "https://api.dineromail.com/";
     const DINEROMAIL_WDSL_GATEWAY = "https://api.dineromail.com/dmapi.asmx?WSDL";
+
 
 
     protected $_currency;
