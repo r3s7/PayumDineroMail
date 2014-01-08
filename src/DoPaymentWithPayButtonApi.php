@@ -76,6 +76,9 @@ class DoPaymentWithPayButtonApi extends Api
      * @param array $items of \Payum\DineroMail\Request\HttpGet\Objects\Item to create the payment
      * @param \Payum\DineroMail\Request\HttpGet\Objects\Merchant $merchant
      * @param $merchantTransactionId
+     * @param $okUrl
+     * @param $pendingUrl
+     * @param $errorUrl
      * @internal param string $countryId
      * @internal param string $paymentMethodAvailable
      * @return mixed
@@ -85,7 +88,10 @@ class DoPaymentWithPayButtonApi extends Api
         Buyer $buyer,
         Array $items,
         $merchant,
-        $merchantTransactionId
+        $merchantTransactionId,
+        $okUrl,
+        $pendingUrl,
+        $errorUrl
     ) {
 
         /* @TODO we should use $hash in the future with the Dineromail Advanced Integration, @see the manual
@@ -102,7 +108,10 @@ class DoPaymentWithPayButtonApi extends Api
                 $this->_countryId,
                 $this->_paymentMethodAvailable,
                 $merchantTransactionId,
-                $this->hash($buyer,$items,$merchantTransactionId)
+                $this->hash($buyer,$items,$merchantTransactionId),
+                $okUrl,
+                $pendingUrl,
+                $errorUrl
             )
         );
 

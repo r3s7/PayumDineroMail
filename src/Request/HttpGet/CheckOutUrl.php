@@ -33,6 +33,10 @@ class CheckOutUrl
     protected $_merchantTransactionId;
     protected $_hash;
 
+    protected $_okUrl;
+    protected $_pendingUrl;
+    protected $_errorUrl;
+
     public function __construct(
         Buyer $buyer,
         Array $items,
@@ -41,7 +45,10 @@ class CheckOutUrl
         $countryId,
         $paymentMethodAvailable,
         $merchantTransactionId,
-        $hash
+        $hash,
+        $okUrl,
+        $pendingUrl,
+        $errorUrl
     )
     {
 
@@ -53,6 +60,10 @@ class CheckOutUrl
         $this->_hash = $hash;
         $this->_merchantTransactionId = $merchantTransactionId;
         $this->_paymentMethodAvailable = $paymentMethodAvailable;
+
+        $this->_okUrl = urlencode($okUrl);
+        $this->_pendingUrl = urlencode($pendingUrl);
+        $this->_errorUrl = urlencode($errorUrl);
     }
 
 
@@ -73,11 +84,18 @@ class CheckOutUrl
         $string .= $this->_merchant;
         $string .= "&country_id={$this->_countryId}";
         $string .= Item::concatenateItems($this->_items);
-
         $string .= "&payment_method_available={$this->_paymentMethodAvailable}";
         $string .= "&transaction_id={$this->_merchantTransactionId}";
-        //$string .= "&hash={$this->_hash}";
+
         //@TODO we need figure out how we can get the status notification, IPN maybe (Dineromail sucks)
+
+        //I think this should works for payment status notification
+        $string .= "&ok_url={$this->_okUrl}";
+        $string .= "&pending_url={$this->_pendingUrl}";
+        $string .= "&error_url={$this->_errorUrl}";
+
+        //$string .= "&hash={$this->_hash}";
+
 
         return $string;
 

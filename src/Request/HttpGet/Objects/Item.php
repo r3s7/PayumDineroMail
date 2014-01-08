@@ -98,7 +98,7 @@ class Item
         $string .= "&item_ammount_{$this->_itemNumber}={$this->_ammount}";
         $string .= "&item_name_{$this->_itemNumber}={$this->_name}";
         $string .= "&item_quantity_{$this->_itemNumber}={$this->_quantity}";
-        $string .= "&item_currency_{$this->_itemNumber}={$this->_currency}";
+        //$string .= "&item_currency_{$this->_itemNumber}={$this->_currency}";
 
         return $string;
     }
