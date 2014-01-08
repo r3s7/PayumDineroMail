@@ -105,25 +105,25 @@ class Buyer
 
         $string = '';
 
-        if(!empty($this->_documentNumber))
+
             $string .= "buyer_document_number=".$this->_documentNumber;
 
-        if(!empty($this->_documentType))
+
             $string .= "&buyer_document_type=".$this->_documentType;
 
-        if(!empty($this->_email))
+
             $string .= "&buyer_email=".$this->_email;
 
-        if(!empty($this->_lastName))
+
             $string .= "&buyer_lastname=".$this->_lastName;
 
-        if(!empty($this->_name))
+
             $string .= "&buyer_name=".$this->_name;
 
-        if(!empty($this->_phone))
+
             $string .= "&buyer_phone=".$this->_phone;
 
-        if(!empty($this->_sex))
+
             $string .= "&buyer_sex=".$this->_sex;
 
         return trim($string);
