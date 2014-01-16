@@ -1,10 +1,11 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: gallopinto
+ * User:  Franchesco Fonseca <franchesco@wakedocuments.com>
  * Date: 1/14/14
  * Time: 2:52 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * Collaborators: Martyn Ling <martyn@orthomeo.com>, David Baker <david@acorncomputersolutions.com>
+ *
  */
 
 namespace Payum\DineroMail\Request\HttpGet;
@@ -58,41 +59,6 @@ class Payment
 
     }
 
-    protected function prepareItems()
-    {
-        $this->_items = Item::concatenateItems($this->_items);
-    }
-
-    protected function encodeUrls()
-    {
-        $this->paymentCompletedUrl = urlencode($this->paymentCompletedUrl);
-        $this->paymentPendingUrl   = urlencode($this->paymentPendingUrl);
-        $this->paymentErrorUrl     = urlencode($this->paymentErrorUrl);
-    }
-
-    protected function prepareCheckOutUrl()
-    {
-
-        $string = '';
-        $string .= $this->_rootCheckOutUrl;
-        //@TODO we would the the Buyer object in the Future for the advanced integration with Hash
-        //$string .= $this->_buyer; Buyer is not used for the moment
-        $string .= $this->_merchant;
-        $string .= "&country_id={$this->_countryId}";
-        $string .= Item::concatenateItems($this->_items);
-        $string .= "&payment_method_available={$this->_paymentMethodAvailable}";
-        $string .= "&transaction_id={$this->_merchantTransactionId}";
-        //I think this should works for payment status notification
-        $string .= "&ok_url={$this->paymentCompletedUrl}";
-        $string .= "&pending_url={$this->paymentPendingUrl}";
-        $string .= "&error_url={$this->paymentErrorUrl}";
-        $string .= "&url_redirect_enabled=1";
-        $string .= "&buyer_message=1";
-
-
-        $this->_checkOutUrl = $string;
-
-    }
 
     protected function validate()
     {
@@ -190,6 +156,43 @@ class Payment
         }
 
         return $valid;
+
+    }
+
+
+    protected function prepareItems()
+    {
+        $this->_items = Item::concatenateItems($this->_items);
+    }
+
+    protected function encodeUrls()
+    {
+        $this->paymentCompletedUrl = urlencode($this->paymentCompletedUrl);
+        $this->paymentPendingUrl   = urlencode($this->paymentPendingUrl);
+        $this->paymentErrorUrl     = urlencode($this->paymentErrorUrl);
+    }
+
+    protected function prepareCheckOutUrl()
+    {
+
+        $string = '';
+        $string .= $this->_rootCheckOutUrl;
+        //@TODO we would the the Buyer object in the Future for the advanced integration with Hash
+        //$string .= $this->_buyer; Buyer is not used for the moment
+        $string .= $this->_merchant;
+        $string .= "&country_id={$this->_countryId}";
+        $string .= Item::concatenateItems($this->_items);
+        $string .= "&payment_method_available={$this->_paymentMethodAvailable}";
+        $string .= "&transaction_id={$this->_merchantTransactionId}";
+        //I think this should works for payment status notification
+        $string .= "&ok_url={$this->paymentCompletedUrl}";
+        $string .= "&pending_url={$this->paymentPendingUrl}";
+        $string .= "&error_url={$this->paymentErrorUrl}";
+        $string .= "&url_redirect_enabled=1";
+        $string .= "&buyer_message=1";
+
+
+        $this->_checkOutUrl = $string;
 
     }
 
