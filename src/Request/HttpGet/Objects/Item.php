@@ -78,6 +78,10 @@ class Item
         return $this->_quantity;
     }
 
+    public function getItemNumber(){
+        return $this->_itemNumber;
+    }
+
     public static function concatenateItems(Array $items)
     {
 
