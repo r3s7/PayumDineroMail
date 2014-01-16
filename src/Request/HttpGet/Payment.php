@@ -27,12 +27,12 @@ class Payment
     protected $_paymentMethodAvailable;
     protected $_rootCheckOutUrl;
 
+    protected $concatenatedItems;
     protected $_checkOutUrl;
     protected $_isValid;
 
     public function __construct($config)
     {
-
         $this->buyer                   = $config['Buyer'];
         $this->items                   = $config['Items'];
         $this->merchant                = $config['Merchant'];
@@ -44,34 +44,53 @@ class Payment
         $this->paymentPendingUrl       = $config['PaymentPendingUrl'];
         $this->paymentErrorUrl         = $config['PaymentErrorUrl'];
         $this->checkOutUrl             = $this->prepareCheckOutUrl();
-        $this->isValid                 = $this->validate();
+
+        //validate attributes
+        $this->isValid = $this->validate();
+
+        //before validate
+        if ($this->isValid) {
+            $this->encodeUrls();
+            $this->prepareItems();
+            $this->prepareCheckOutUrl();
+        }
+
 
     }
 
-    //
+    protected function prepareItems()
+    {
+        $this->_items = Item::concatenateItems($this->_items);
+    }
+
+    protected function encodeUrls()
+    {
+        $this->paymentCompletedUrl = urlencode($this->paymentCompletedUrl);
+        $this->paymentPendingUrl   = urlencode($this->paymentPendingUrl);
+        $this->paymentErrorUrl     = urlencode($this->paymentErrorUrl);
+    }
+
     protected function prepareCheckOutUrl()
     {
 
         $string = '';
         $string .= $this->_rootCheckOutUrl;
-        //$string .= $this->_buyer;
+        //@TODO we would the the Buyer object in the Future for the advanced integration with Hash
+        //$string .= $this->_buyer; Buyer is not used for the moment
         $string .= $this->_merchant;
         $string .= "&country_id={$this->_countryId}";
         $string .= Item::concatenateItems($this->_items);
         $string .= "&payment_method_available={$this->_paymentMethodAvailable}";
         $string .= "&transaction_id={$this->_merchantTransactionId}";
-
-        //@TODO we need figure out how we can get the status notification, IPN maybe (Dineromail sucks)
-
         //I think this should works for payment status notification
-        $string .= "&ok_url={$this->_okUrl}";
-        $string .= "&pending_url={$this->_pendingUrl}";
-        $string .= "&error_url={$this->_errorUrl}";
+        $string .= "&ok_url={$this->paymentCompletedUrl}";
+        $string .= "&pending_url={$this->paymentPendingUrl}";
+        $string .= "&error_url={$this->paymentErrorUrl}";
         $string .= "&url_redirect_enabled=1";
         $string .= "&buyer_message=1";
 
 
-        return $string;
+        $this->_checkOutUrl = $string;
 
     }
 
