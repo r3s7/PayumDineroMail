@@ -52,6 +52,26 @@ class Payment
     protected function prepareCheckOutUrl()
     {
 
+        $string = '';
+        $string .= $this->_rootCheckOutUrl;
+        //$string .= $this->_buyer;
+        $string .= $this->_merchant;
+        $string .= "&country_id={$this->_countryId}";
+        $string .= Item::concatenateItems($this->_items);
+        $string .= "&payment_method_available={$this->_paymentMethodAvailable}";
+        $string .= "&transaction_id={$this->_merchantTransactionId}";
+
+        //@TODO we need figure out how we can get the status notification, IPN maybe (Dineromail sucks)
+
+        //I think this should works for payment status notification
+        $string .= "&ok_url={$this->_okUrl}";
+        $string .= "&pending_url={$this->_pendingUrl}";
+        $string .= "&error_url={$this->_errorUrl}";
+        $string .= "&url_redirect_enabled=1";
+        $string .= "&buyer_message=1";
+
+
+        return $string;
 
     }
 
@@ -60,20 +80,20 @@ class Payment
 
         //array of items to be validated
 
-        $valid = false;
+        $valid            = false;
         $somethingIsWrong = false;
 
         $validate = array(
-            'Buyer'                 => false,
-            'Items'                 => false,
-            'Merchant'              => false,
-            'MerchantTransactionId' => false,
-            'PaymentCompletedUrl'   => false,
-            'PaymentPendingUrl'     => false,
-            'PaymentErrorUrl'       => false,
-            'CheckOutUrl'           => false,
-            'RootCheckOutUrl' => false,
-            'countryId' => false,
+            'Buyer'                  => false,
+            'Items'                  => false,
+            'Merchant'               => false,
+            'MerchantTransactionId'  => false,
+            'PaymentCompletedUrl'    => false,
+            'PaymentPendingUrl'      => false,
+            'PaymentErrorUrl'        => false,
+            'CheckOutUrl'            => false,
+            'RootCheckOutUrl'        => false,
+            'countryId'              => false,
             'PaymentMethodAvailable' => false
         );
 
@@ -128,22 +148,22 @@ class Payment
         }
 
         //if all is valid return true and the payment isValid
-        foreach($validate as $validation){
+        foreach ($validate as $validation) {
 
             //something wrong detected
-            if(!$validation && $valid){
+            if (!$validation && $valid) {
                 $somethingIsWrong = true;
-                $valid = false;
+                $valid            = false;
             }
 
             //something wrong detected
-            if(!$validation && !$valid){
+            if (!$validation && !$valid) {
                 $somethingIsWrong = true;
-                $valid = false;
+                $valid            = false;
             }
 
             //if validation is Ok and valid is false and
-            if($validation && !$valid && !$somethingIsWrong){
+            if ($validation && !$valid && !$somethingIsWrong) {
                 $valid = true;
             }
 
