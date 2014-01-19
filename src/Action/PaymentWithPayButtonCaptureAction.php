@@ -12,6 +12,7 @@ use Payum\Core\Request\CaptureRequest;
 use Payum\Core\Model\ArrayObject;
 
 // Payum Yii extension namespaces
+use Payum\DineroMail\Request\HttpGet\Payment;
 use Payum\YiiExtension\Model\PaymentDetailsActiveRecordWrapper;
 
 //Internal namespaces
@@ -95,18 +96,28 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
             }
 
 
+            $payment = new Payment(
+                array(
+                    'Buyer' => $buyer,
+                    'Items' => $items,
+                    'Merchant' => $Api->getMerchant(),
+                    'PaymentMethodAvailable' => 'all',
+                    'CountryId' => '3',
+                    'RootCheckOutUrl' => $Api::DINEROMAIL_ROOT_CHECKOUT_URL,
+                    'MerchantTransactionId' => $model['MerchantTransactionId'],
+                    'PaymentCompletedUrl' => $request->getModel()->activeRecord->_after_url,
+                    'PaymentPendingUrl' => $request->getModel()->activeRecord->_after_url,
+                    'PaymentErrorUrl' => $request->getModel()->activeRecord->_after_url
+                )
+            );
+
+
             try {
-                //this method redirects to the DineroMail checkOut page
-                //\CVarDumper::dump($items,10,true); \Yii::app()->end();
-                $Api->doPaymentWithPayButton(
-                    $buyer,
-                    $items,
-                    $Api->getMerchant(),
-                    $model['MerchantTransactionId'],
-                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=COMPLETED&dm_transaction_id={$model['MerchantTransactionId']}",
-                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=PENDING&dm_transaction_id={$model['MerchantTransactionId']}",
-                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=ERROR&dm_transaction_id={$model['MerchantTransactionId']}"
-                );
+
+                if($payment->isValid){
+                    $Api->doPaymentWithPayButton($payment);
+                }
+
                 //@TODO in medium-term we need here CountryId and PaymentMethodAvailable
 
 
