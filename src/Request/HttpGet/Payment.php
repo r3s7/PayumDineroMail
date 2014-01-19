@@ -39,11 +39,11 @@ class Payment
         $this->merchant                = $config['Merchant'];
         $this->_paymentMethodAvailable = $config['PaymentMethodAvailable'];
         $this->_countryId              = $config['CountryId'];
-        $this->_rootCheckOutUrl        = $config['rootCheckOutUrl'];
+        $this->_rootCheckOutUrl        = $config['RootCheckOutUrl'];
         $this->merchantTransactionId   = $config['MerchantTransactionId'];
-        $this->paymentCompletedUrl     = $config['PaymentCompletedUrl'];
-        $this->paymentPendingUrl       = $config['PaymentPendingUrl'];
-        $this->paymentErrorUrl         = $config['PaymentErrorUrl'];
+        $this->paymentCompletedUrl     = $config['PaymentCompletedUrl']. "&dm_transaction_status=completed&dm_transaction_id={$config['MerchantTransactionId']}";
+        $this->paymentPendingUrl       = $config['PaymentPendingUrl']. "&dm_transaction_status=pending&dm_transaction_id={$config['MerchantTransactionId']}";
+        $this->paymentErrorUrl         = $config['PaymentErrorUrl']. "&dm_transaction_status=error&dm_transaction_id={$config['MerchantTransactionId']}";
         $this->checkOutUrl             = $this->prepareCheckOutUrl();
 
         //validate attributes
