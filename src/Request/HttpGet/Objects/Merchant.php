@@ -13,7 +13,6 @@ class Merchant
 {
 
     protected $_merchantId    = '';
-    protected $_password      = '';
 
     public function __construct($id)
     {
