@@ -18,8 +18,10 @@ class Item extends SoapObject
     protected $_description = '';
     protected $_name = '';
     protected $_quantity = 1;
-    protected $_currency = Api::DINEROMAIL_DEFAULT_CURRENCY;
 
+    static protected $_currencyCode = Api::DINEROMAIL_DEFAULT_CURRENCY;
+    static protected $_needsReconversion;
+    static protected $_reconversionFee;
 
     public function setAmount($amount)
     {
@@ -31,9 +33,19 @@ class Item extends SoapObject
         $this->_code = $code;
     }
 
-    public function setCurrency($currency)
+    static public function setCurrencyCode($currencyCode)
     {
-        $this->_currency = $currency;
+        self::$_currencyCode = $currencyCode;
+    }
+
+    static public function setNeedsReconversion($bool)
+    {
+        self::$_needsReconversion = $bool;
+    }
+
+    static public function setReconversionFee($fee)
+    {
+        self::$_reconversionFee = $fee;
     }
 
     public function setDescription($description)
