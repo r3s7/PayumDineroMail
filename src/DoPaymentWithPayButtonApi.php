@@ -25,33 +25,37 @@ class DoPaymentWithPayButtonApi extends Api
     public function __construct($config)
     {
 
-        $this->_merchant = new Merchant($config['MerchantId']);
-        $this->_countryId = $config['CountryId'];
-        $this->_currencyReconversion = $config['CurrencyReconversion'];
+        $this->_merchant                = new Merchant($config['MerchantId']);
+        $this->_countryId               = $config['CountryId'];
+        $this->_currencyReconversion    = $config['CurrencyReconversion'];
         $this->_currencyReconversionFee = $config['CurrencyReconversionFee'];
-        $this->currencyCode = $config['CurrencyCode'];
-        $this->_paymentMethodAvailable = self::DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE;
+        $this->_currencyCode            = $config['CurrencyCode'];
+        $this->_paymentMethodAvailable  = self::DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE;
 
     }
 
-    public function setMerchant(Merchant $merchant){
+    public function setMerchant(Merchant $merchant)
+    {
 
         $this->_merchant = $merchant;
     }
 
-    public function setCountryId($countryId){
+    public function setCountryId($countryId)
+    {
 
-        $this->_countryId = (string) $countryId;
-
-    }
-
-    public function setPaymentMethodAvailable($paymentMethodAvailable){
-
-        $this->_paymentMethodAvailable = (string) $paymentMethodAvailable;
+        $this->_countryId = (string)$countryId;
 
     }
 
-    public function getMerchant(){
+    public function setPaymentMethodAvailable($paymentMethodAvailable)
+    {
+
+        $this->_paymentMethodAvailable = (string)$paymentMethodAvailable;
+
+    }
+
+    public function getMerchant()
+    {
 
         return $this->_merchant;
     }
@@ -60,10 +64,10 @@ class DoPaymentWithPayButtonApi extends Api
         Buyer $buyer,
         Array $items,
         $merchantTransactionId
-    ){
+    ) {
 
         $string = '';
-        $string .= (string) $buyer;
+        $string .= (string)$buyer;
         $string .= Item::concatenateItems($items);
         $string .= $this->_merchant;
         $string .= "&payment_method_available=" . $this->_paymentMethodAvailable;
@@ -114,7 +118,7 @@ class DoPaymentWithPayButtonApi extends Api
                 $this->_countryId,
                 $this->_paymentMethodAvailable,
                 $merchantTransactionId,
-                $this->hash($buyer,$items,$merchantTransactionId),
+                $this->hash($buyer, $items, $merchantTransactionId),
                 $okUrl,
                 $pendingUrl,
                 $errorUrl
