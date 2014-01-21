@@ -64,10 +64,10 @@ class Item
     public function setAmount($ammount)
     {
         if (self::$_needsReconversion == true) {
-            $this->_ammount = (string)(round(($ammount * self::$_reconversionFee),2));
+            $this->_ammount = (string)(number_format(($ammount * self::$_reconversionFee),2,'.',''));
 
         } else {
-            $this->_ammount = (string)$ammount;
+            $this->_ammount = (string)number_format($ammount,2,'.','');
         }
 
     }
