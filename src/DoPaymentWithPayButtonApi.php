@@ -22,12 +22,12 @@ class DoPaymentWithPayButtonApi extends Api
     public function __construct($config)
     {
 
-        $this->_merchant                = new Merchant($config['MerchantId']);
-        $this->_countryId               = $config['CountryId'];
+        $this->_merchant  = new Merchant($config['MerchantId']);
+        $this->_countryId = $config['CountryId'];
         Item::setCurrencyCode($config['CurrencyCode']);
         Item::setNeedsReconversion($config['CurrencyReconversion']);
         Item::setReconversionFee($config['CurrencyReconversionFee']);
-        $this->_paymentMethodAvailable  = self::DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE;
+        $this->_paymentMethodAvailable = self::DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE;
 
     }
 
