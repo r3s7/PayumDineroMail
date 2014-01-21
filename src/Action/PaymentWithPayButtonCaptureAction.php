@@ -87,10 +87,8 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
                 $currentItem = null;
                 $currentItem = new Item();
                 $currentItem->setName($item->name);
-                //setQuantity is not needed, 1 will be fine
-                $currentItem->setQuantity('1');
+                //setQuantity is not needed
                 $currentItem->setAmount($item->amount);
-                $currentItem->setCurrency('clp');
                 $items[] = $currentItem;
             }
 

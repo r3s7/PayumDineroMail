@@ -19,7 +19,10 @@ class Item
     protected $_ammount = '';
     protected $_quantity = 1;
     protected $_name = '';
-    protected $currency = '';
+
+    static protected $_currencyCode;
+    static protected $_needsReconversion = false;
+    static protected $_reconversionFee = 1;
 
     /**
      * Please note that DineroMail require suffixes for the item positions
@@ -42,9 +45,31 @@ class Item
      *
      * for example: 12050 is equal to 120.50
      */
+
+    static public function setCurrencyCode($currencyCode)
+    {
+        self::$_currencyCode = $currencyCode;
+    }
+
+    static public function setNeedsReconversion($bool)
+    {
+        self::$_needsReconversion = $bool;
+    }
+
+    static public function setReconversionFee($fee)
+    {
+        self::$_reconversionFee = $fee;
+    }
+
     public function setAmount($ammount)
     {
-        $this->_ammount = (string) $ammount;
+        if (self::$_needsReconversion == true) {
+            $this->_ammount = (string)(number_format(($ammount * self::$_reconversionFee),2,'.',''));
+
+        } else {
+            $this->_ammount = (string)number_format($ammount,2,'.','');
+        }
+
     }
 
     public function setName($name)
@@ -54,12 +79,7 @@ class Item
 
     public function setQuantity($quantity)
     {
-        $this->_quantity = (string) $quantity;
-    }
-
-    public function setCurrency($currency)
-    {
-        $this->_currency = (string) $currency;
+        $this->_quantity = (string)$quantity;
     }
 
 
@@ -94,11 +114,12 @@ class Item
     public function __toString()
     {
 
-        $string = '';
+        $currencyCode = self::$_currencyCode;
+        $string       = '';
         $string .= "&item_ammount_{$this->_itemNumber}={$this->_ammount}";
         $string .= "&item_name_{$this->_itemNumber}={$this->_name}";
         $string .= "&item_quantity_{$this->_itemNumber}={$this->_quantity}";
-        //$string .= "&item_currency_{$this->_itemNumber}={$this->_currency}";
+        $string .= "&item_currency_{$this->_itemNumber}={$currencyCode}";
 
         return $string;
     }

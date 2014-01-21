@@ -13,12 +13,10 @@ class Merchant
 {
 
     protected $_merchantId    = '';
-    protected $_password      = '';
 
-    public function __construct($id, $password)
+    public function __construct($id)
     {
         $this->_merchantId    = (string)$id;
-        $this->_password      = (string)$password;
     }
 
     public function setMerchantId($id)
@@ -26,19 +24,9 @@ class Merchant
         $this->_merchantId = (string)$id;
     }
 
-    public function setPassword($password)
-    {
-        $this->_password = (string)$password;
-    }
-
     public function getMerchantId()
     {
         return $this->_merchantId;
-    }
-
-    public function getPassword()
-    {
-        return $this->_password;
     }
 
     /**
