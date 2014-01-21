@@ -69,7 +69,6 @@ class DoPaymentWithPayButtonApi extends Api
         $string .= $this->_merchant;
         $string .= "&payment_method_available=" . $this->_paymentMethodAvailable;
         $string .= "&transaction_id =" . $merchantTransactionId;
-        $string .= $this->_merchant->getPassword();
 
         return md5($string);
     }
@@ -121,7 +120,6 @@ class DoPaymentWithPayButtonApi extends Api
                 $errorUrl
             )
         );
-
 
     }
 
