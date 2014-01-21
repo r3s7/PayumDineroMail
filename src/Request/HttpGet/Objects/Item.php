@@ -66,7 +66,7 @@ class Item
         if (self::$_needsReconversion == true) {
             $this->_ammount = (string)($ammount * self::$_reconversionFee);
         } else {
-            $this->_ammount = (string) $ammount;
+            $this->_ammount = (string)$ammount;
         }
 
     }
@@ -80,7 +80,6 @@ class Item
     {
         $this->_quantity = (string)$quantity;
     }
-
 
 
     public function getAmount()
@@ -115,7 +114,7 @@ class Item
     {
 
         $currencyCode = self::$_currencyCode;
-        $string = '';
+        $string       = '';
         $string .= "&item_ammount_{$this->_itemNumber}={$this->_ammount}";
         $string .= "&item_name_{$this->_itemNumber}={$this->_name}";
         $string .= "&item_quantity_{$this->_itemNumber}={$this->_quantity}";
