@@ -81,10 +81,6 @@ class Item
         $this->_quantity = (string)$quantity;
     }
 
-    public function setCurrency($currency)
-    {
-        $this->_currency = (string)$currency;
-    }
 
 
     public function getAmount()
@@ -118,11 +114,12 @@ class Item
     public function __toString()
     {
 
+        $currencyCode = self::$_currencyCode;
         $string = '';
         $string .= "&item_ammount_{$this->_itemNumber}={$this->_ammount}";
         $string .= "&item_name_{$this->_itemNumber}={$this->_name}";
         $string .= "&item_quantity_{$this->_itemNumber}={$this->_quantity}";
-        //$string .= "&item_currency_{$this->_itemNumber}={$this->_currency}";
+        $string .= "&item_currency_{$this->_itemNumber}={$currencyCode}";
 
         return $string;
     }
