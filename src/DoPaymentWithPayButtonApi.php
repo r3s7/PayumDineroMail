@@ -14,6 +14,9 @@ class DoPaymentWithPayButtonApi extends Api
     protected $_merchant;
     protected $_countryId;
     protected $_paymentMethodAvailable;
+    protected $_currencyReconversion;
+    protected $_currencyReconversionFee;
+    protected $_currencyCode;
 
     const DINEROMAIL_ROOT_CHECKOUT_URL                = "https://checkout.dineromail.com/CheckOut?";
     const DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE = "all";
@@ -22,8 +25,11 @@ class DoPaymentWithPayButtonApi extends Api
     public function __construct($config)
     {
 
-        $this->_merchant = new Merchant($config['merchantId'],$config['password']);
-        $this->_countryId = self::DINEROMAIL_DEFAULT_COUNTRY_ID;
+        $this->_merchant = new Merchant($config['MerchantId']);
+        $this->_countryId = $config['CountryId'];
+        $this->_currencyReconversion = $config['CurrencyReconversion'];
+        $this->_currencyReconversionFee = $config['CurrencyReconversionFee'];
+        $this->currencyCode = $config['CurrencyCode'];
         $this->_paymentMethodAvailable = self::DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE;
 
     }
