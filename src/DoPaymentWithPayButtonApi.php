@@ -22,6 +22,16 @@ class DoPaymentWithPayButtonApi extends Api
     public function __construct($config)
     {
 
+        $requiredIndexes= array('MerchantId','CountryId','CurrencyCode','CurrencyReconversion','CurrencyReconversionFee');
+        foreach($requiredIndexes as $requiredIndex){
+            if(!isset($config[$requiredIndex])){
+                \Yii::log("{$requiredIndex} Required config parameter is missing","error","DoPaymentWithPayButtonApi Constructor");
+            }
+            if(empty($config[$requiredIndex])){
+                \Yii::log("{$requiredIndex} Required config parameter is empty","error","DoPaymentWithPayButtonApi Constructor");
+            }
+        }
+
         $this->_merchant  = new Merchant($config['MerchantId']);
         $this->_countryId = $config['CountryId'];
         Item::setCurrencyCode($config['CurrencyCode']);

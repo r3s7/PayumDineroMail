@@ -16,6 +16,9 @@ class Merchant
 
     public function __construct($id)
     {
+        if(empty($id)){
+            \Yii::log("Required Merchant id parameter is empty","error","Merchant Constructor");
+        }
         $this->_merchantId    = (string)$id;
     }
 
@@ -37,6 +40,10 @@ class Merchant
      */
     public function __toString()
     {
+        if(empty($this->_merchantId)){
+            \Yii::log("merchantId is empty","error","Merchant toString");
+        }
+
         return "merchant={$this->_merchantId}";
 
     }

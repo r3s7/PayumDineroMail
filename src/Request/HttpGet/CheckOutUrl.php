@@ -64,6 +64,30 @@ class CheckOutUrl
         $this->_okUrl = urlencode($okUrl);
         $this->_pendingUrl = urlencode($pendingUrl);
         $this->_errorUrl = urlencode($errorUrl);
+
+
+        $requiredAttributes = array(
+            '_buyer',
+            '_items',
+            '_merchant',
+            '_rootCheckOutUrl',
+            '_countryId',
+            '_hash',
+            '_merchantTransactionId',
+            '_paymentMethodAvailable',
+            '_okUrl',
+            '_pendingUrl',
+            '_errorUrl'
+        );
+        foreach($requiredAttributes as $requiredAttribute){
+            if(!isset($this->{$requiredAttribute})){
+                \Yii::log("{$requiredAttribute} Required attribute is missing","error","CheckOutUrl Constructor");
+            }
+            if(empty($this->{$requiredAttribute})){
+                \Yii::log("{$requiredAttribute} Required attribute is empty","error","CheckOutUrl Constructor");
+            }
+        }
+
     }
 
 
