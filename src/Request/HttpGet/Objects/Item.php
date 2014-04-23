@@ -53,12 +53,7 @@ class Item
 
     public function setAmount($ammount)
     {
-        if (self::$_needsReconversion == true) {
-            $this->_ammount = (string)(number_format(($ammount * self::$_reconversionFee),2,'.',''));
-
-        } else {
-            $this->_ammount = (string)number_format($ammount,2,'.','');
-        }
+        $this->_ammount = (string)number_format($ammount,2,'.','');
 
     }
 
