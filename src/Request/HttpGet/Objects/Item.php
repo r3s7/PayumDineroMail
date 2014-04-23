@@ -15,14 +15,14 @@ class Item
 {
 
     public static $itemsInstancesAmount = 0;
+    protected static $_currencyCode;
+
     protected $_itemNumber;
     protected $_ammount = '';
     protected $_quantity = 1;
     protected $_name = '';
 
-    static protected $_currencyCode;
-    static protected $_needsReconversion = false;
-    static protected $_reconversionFee = 1;
+
 
     /**
      * Please note that DineroMail require suffixes for the item positions
@@ -51,24 +51,9 @@ class Item
         self::$_currencyCode = $currencyCode;
     }
 
-    static public function setNeedsReconversion($bool)
-    {
-        self::$_needsReconversion = $bool;
-    }
-
-    static public function setReconversionFee($fee)
-    {
-        self::$_reconversionFee = $fee;
-    }
-
     public function setAmount($ammount)
     {
-        if (self::$_needsReconversion == true) {
-            $this->_ammount = (string)(number_format(($ammount * self::$_reconversionFee),2,'.',''));
-
-        } else {
-            $this->_ammount = (string)number_format($ammount,2,'.','');
-        }
+        $this->_ammount = (string)number_format($ammount,2,'.','');
 
     }
 

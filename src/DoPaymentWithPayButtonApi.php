@@ -22,7 +22,7 @@ class DoPaymentWithPayButtonApi extends Api
     public function __construct($config)
     {
 
-        $requiredIndexes= array('MerchantId','CountryId','CurrencyCode','CurrencyReconversion','CurrencyReconversionFee');
+        $requiredIndexes= array('MerchantId','CountryId','CurrencyCode');
         foreach($requiredIndexes as $requiredIndex){
             if(!isset($config[$requiredIndex])){
                 \Yii::log("{$requiredIndex} Required config parameter is missing","error","DoPaymentWithPayButtonApi Constructor");
@@ -35,8 +35,6 @@ class DoPaymentWithPayButtonApi extends Api
         $this->_merchant  = new Merchant($config['MerchantId']);
         $this->_countryId = $config['CountryId'];
         Item::setCurrencyCode($config['CurrencyCode']);
-        Item::setNeedsReconversion($config['CurrencyReconversion']);
-        Item::setReconversionFee($config['CurrencyReconversionFee']);
         $this->_paymentMethodAvailable = self::DINEROMAIL_DEFAULT_PAYMENT_METHOD_AVAILABLE;
 
     }
