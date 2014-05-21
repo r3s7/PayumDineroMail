@@ -26,7 +26,6 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
     public function execute($request)
     {
 
-
         $getPayumPaymentDetails = PaymentDetailsActiveRecordWrapper::findModelById(
             'payum_payment',
             $request->getModel()->getDetails()->getId()
@@ -46,20 +45,13 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
             array_key_exists('Sex', $model)
         ) {
 
-
             $unSuglify = explode('-', $model['MerchantTransactionId']);
-
             $getPayment = \Payment::model()->findByPk($unSuglify[0]);
-
             $getDineroMailConfig = \DineroMailPayButtonConfig::model()->findByPk($getPayment->payment_method_id);
-
             $getOrder = \Order::model()->findByPk($getPayment->order_id);
-
             $getOrderItems = $getOrder->orderItems();
-
             //get Api
             $Api = $getDineroMailConfig->getApi();
-
 
             /* Capture Buyer information, all information are required */
 
@@ -83,19 +75,17 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
 
             $items = array();
             foreach ($getOrderItems as $item) {
-
                 $currentItem = null;
                 $currentItem = new Item();
                 $currentItem->setName($item->name);
                 //setQuantity is not needed
                 $currentItem->setAmount($item->amount);
+                $currentItem->setCurrencyCode($model['CurrencyCode']);
                 $items[] = $currentItem;
             }
 
-
             try {
                 //this method redirects to the DineroMail checkOut page
-                //\CVarDumper::dump($items,10,true); \Yii::app()->end();
                 $Api->doPaymentWithPayButton(
                     $buyer,
                     $items,
@@ -107,25 +97,20 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
                 );
                 //@TODO in medium-term we need here CountryId and PaymentMethodAvailable
 
-
             } catch (DineroMailException $e) {
 
                 \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
             }
 
-
         } else {
-
 
             throw new \CHttpException(400, \Yii::t('app', 'bad request'));
         }
-
 
     }
 
     public function supports($request)
     {
-
         $paymentName   = explode('-', $request->getModel()->activeRecord->_payment_name);
         $paymentMethod = $paymentName[0];
 
