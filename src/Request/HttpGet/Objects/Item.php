@@ -15,14 +15,12 @@ class Item
 {
 
     public static $itemsInstancesAmount = 0;
-    protected static $_currencyCode;
 
     protected $_itemNumber;
     protected $_ammount = '';
     protected $_quantity = 1;
     protected $_name = '';
-
-
+    protected $_currencyCode = '';
 
     /**
      * Please note that DineroMail require suffixes for the item positions
@@ -46,14 +44,15 @@ class Item
      * for example: 12050 is equal to 120.50
      */
 
-    static public function setCurrencyCode($currencyCode)
-    {
-        self::$_currencyCode = $currencyCode;
-    }
-
     public function setAmount($ammount)
     {
         $this->_ammount = (string)number_format($ammount,2,'.','');
+
+    }
+
+    public function setCurrencyCode($cc)
+    {
+        $this->_currencyCode = (string)$cc;
 
     }
 
@@ -93,18 +92,15 @@ class Item
         }
 
         return $string;
-
     }
 
     public function __toString()
     {
-
-        $currencyCode = self::$_currencyCode;
         $string       = '';
         $string .= "&item_ammount_{$this->_itemNumber}={$this->_ammount}";
         $string .= "&item_name_{$this->_itemNumber}={$this->_name}";
         $string .= "&item_quantity_{$this->_itemNumber}={$this->_quantity}";
-        $string .= "&item_currency_{$this->_itemNumber}={$currencyCode}";
+        $string .= "&item_currency_{$this->_itemNumber}={$this->_currencyCode}";
 
         return $string;
     }
