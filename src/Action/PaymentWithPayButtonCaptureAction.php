@@ -36,37 +36,28 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
         // @TODO check why DocumentNumber, DocumentType, Phone, and Sex are in blank
         if (
             array_key_exists('MerchantTransactionId', $model) &&
-            array_key_exists('DocumentNumber', $model) &&
-            array_key_exists('DocumentType', $model) &&
+            array_key_exists('CurrencyCode', $model) &&
             array_key_exists('Name', $model) &&
             array_key_exists('LastName', $model) &&
-            array_key_exists('Email', $model) &&
-            array_key_exists('Phone', $model) &&
-            array_key_exists('Sex', $model)
+            array_key_exists('Email', $model)
         ) {
 
-            $unSuglify = explode('-', $model['MerchantTransactionId']);
-            $getPayment = \Payment::model()->findByPk($unSuglify[0]);
+            $getPayment          = \Payment::model()->findByPk($model['PaymentId']);
             $getDineroMailConfig = \DineroMailPayButtonConfig::model()->findByPk($getPayment->payment_method_id);
-            $getOrder = \Order::model()->findByPk($getPayment->order_id);
-            $getOrderItems = $getOrder->orderItems();
+            $getOrder            = \Order::model()->findByPk($getPayment->order_id);
+            $getOrderItems       = $getOrder->orderItems();
+
             //get Api
             $Api = $getDineroMailConfig->getApi();
 
-            /* Capture Buyer information, all information are required */
-
-            /* You need pass the reference of the related DineroMailAction instance to the DineroMailBuyer instance,
-             * the DineroMailBuyer instance need the Gateway information stored in DineroMailAction instance,
-             * because each parent of the abstract class DineroMailObject needs the Gateway attributes.
-             * */
             $buyer = new Buyer($Api);
-            $buyer->setDocumentNumber($model['DocumentNumber']);
-            $buyer->setDocumentType($model['DocumentType']);
+            $buyer->setDocumentNumber(isset($model['DocumentNumber']) ? $model['DocumentNumber'] : null);
+            $buyer->setDocumentType(isset($model['DocumentType']) ? $model['DocumentType'] : null);
             $buyer->setName($model['Name']);
             $buyer->setLastName($model['LastName']);
             $buyer->setEmail($model['Email']);
-            $buyer->setPhone($model['Phone']);
-            $buyer->setSex($model['Sex']);
+            $buyer->setPhone(isset($model['Phone']) ? $model['Phone'] : null);
+            $buyer->setSex(isset($model['Sex']) ? $model['Sex'] : null);
 
 
             /* Capture Items information, all information are required except Quantity and Currency
@@ -78,7 +69,7 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
                 $currentItem = null;
                 $currentItem = new Item();
                 $currentItem->setName($item->name);
-                //setQuantity is not needed
+                //setQuantity is not needed in our system
                 $currentItem->setAmount($item->amount);
                 $currentItem->setCurrencyCode($model['CurrencyCode']);
                 $items[] = $currentItem;
@@ -91,15 +82,21 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
                     $items,
                     $Api->getMerchant(),
                     $model['MerchantTransactionId'],
-                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=COMPLETED&dm_transaction_id={$model['MerchantTransactionId']}",
-                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=PENDING&dm_transaction_id={$model['MerchantTransactionId']}",
-                    $request->getModel()->activeRecord->_after_url . "&dm_transaction_status=ERROR&dm_transaction_id={$model['MerchantTransactionId']}"
+                    $request->getModel(
+                    )->activeRecord->_after_url . "&dm_transaction_status=COMPLETED&dm_transaction_id={$model['MerchantTransactionId']}",
+                    $request->getModel(
+                    )->activeRecord->_after_url . "&dm_transaction_status=PENDING&dm_transaction_id={$model['MerchantTransactionId']}",
+                    $request->getModel(
+                    )->activeRecord->_after_url . "&dm_transaction_status=ERROR&dm_transaction_id={$model['MerchantTransactionId']}"
                 );
                 //@TODO in medium-term we need here CountryId and PaymentMethodAvailable
 
             } catch (DineroMailException $e) {
 
-                \Yii::app()->request->redirect($request->getModel()->activeRecord->_after_url);
+                \Yii::app()->request->redirect(
+                    $request->getModel(
+                    )->activeRecord->_after_url . "&dm_transaction_status=ERROR&dm_transaction_id={$model['MerchantTransactionId']}"
+                );
             }
 
         } else {
@@ -111,13 +108,20 @@ class PaymentWithPayButtonCaptureAction extends PaymentAwareAction
 
     public function supports($request)
     {
-        $paymentName   = explode('-', $request->getModel()->activeRecord->_payment_name);
-        $paymentMethod = $paymentName[0];
 
-        if ($paymentMethod == 'DineroMailPayButton') {
+        $getPayumPaymentDetails = PaymentDetailsActiveRecordWrapper::findModelById(
+            'payum_payment',
+            $request->getModel()->getDetails()->getId()
+        );
+
+        $model = unserialize($getPayumPaymentDetails->activeRecord->attributes['_details']);
+
+        if ($model['PaymentMethod'] == \PaymentMethodConfig::DINEROMAIL_PB) {
+
             return true;
 
         } else {
+
             return false;
         }
 
